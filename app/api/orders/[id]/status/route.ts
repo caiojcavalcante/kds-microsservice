@@ -7,11 +7,12 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
-  const body = await req.json();
+  // 👇 aqui volta a ser Promise, igual antes
+  const { id } = await params;
 
+  const body = await req.json();
   const { status, motoboy_name, motoboy_phone } = body;
 
   const allowed = [
@@ -34,11 +35,11 @@ export async function PATCH(
     const result = await pool.query(
       `
       UPDATE orders
-      SET 
-        status = $1,
+      SET
+        status        = $1,
         motoboy_name  = COALESCE($2, motoboy_name),
         motoboy_phone = COALESCE($3, motoboy_phone),
-        updated_at = NOW()
+        updated_at    = NOW()
       WHERE id = $4
       RETURNING *
       `,
@@ -52,7 +53,7 @@ export async function PATCH(
       );
     }
 
-    // Agora só some da fila quando realmente saiu da cozinha
+    // Remove da fila quando saiu da cozinha ou foi encerrado
     if (["SAIU_ENTREGA", "ENTREGUE", "CANCELADO"].includes(status)) {
       await redis.lrem("kds:queue", 0, id);
     }
