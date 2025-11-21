@@ -67,7 +67,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="p-6 min-h-screen bg-gray-50 text-gray-900 font-sans">
+    <main className="p-6 min-h-screen text-gray-900 font-sans">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold mb-2 text-gray-800">Admin – Debug KDS</h1>
         <p className="mb-8 text-gray-600">

@@ -13,7 +13,9 @@ type Order = {
   code: string;
   table_number?: string | null;
   customer_name?: string | null;
-  status: string; // PENDENTE | EM_PREPARO | PRONTO | SAIU_ENTREGA | ENTREGUE | CANCELADO
+  customer_phone?: string | null;
+  service_type?: "MESA" | "DELIVERY" | string;
+  status: string;
   items: OrderItem[];
 };
 
@@ -101,7 +103,8 @@ export default function KdsPage() {
 
       {/* Só pra deixar explícito os allowed do backend */}
       <p className="px-4 text-xs text-zinc-500">
-        Status permitidos: PENDENTE, EM_PREPARO, PRONTO, SAIU_ENTREGA, ENTREGUE, CANCELADO
+        Status permitidos: PENDENTE, EM_PREPARO, PRONTO, SAIU_ENTREGA, ENTREGUE,
+        CANCELADO
       </p>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-4">
@@ -125,9 +128,7 @@ export default function KdsPage() {
 
             <div className="text-zinc-400">
               Cliente:{" "}
-              <span className="text-white">
-                {order.customer_name || "-"}
-              </span>
+              <span className="text-white">{order.customer_name || "-"}</span>
             </div>
 
             <hr className="my-3 border-zinc-700" />
