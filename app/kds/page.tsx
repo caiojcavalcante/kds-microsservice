@@ -13,7 +13,7 @@ type Order = {
   code: string;
   table_number?: string | null;
   customer_name?: string | null;
-  status: string;
+  status: string; // PENDENTE | EM_PREPARO | PRONTO | SAIU_ENTREGA | ENTREGUE | CANCELADO
   items: OrderItem[];
 };
 
@@ -43,15 +43,15 @@ export default function KdsPage() {
   }
 
   async function handleDeliveryWithDriver(orderId: string) {
-    const driverName = window.prompt("Nome do motoboy:");
-    if (!driverName) return;
+    const motoboy_name = window.prompt("Nome do motoboy:");
+    if (!motoboy_name) return;
 
-    const driverPhone = window.prompt("Telefone / WhatsApp do motoboy:");
-    if (!driverPhone) return;
+    const motoboy_phone = window.prompt("Telefone / WhatsApp do motoboy:");
+    if (!motoboy_phone) return;
 
-    await updateStatus(orderId, "DELIVERY", {
-      delivery_driver_name: driverName,
-      delivery_driver_phone: driverPhone,
+    await updateStatus(orderId, "SAIU_ENTREGA", {
+      motoboy_name,
+      motoboy_phone,
     });
   }
 
@@ -63,14 +63,16 @@ export default function KdsPage() {
 
   function getStatusColor(status: string) {
     switch (status) {
-      case "IN_PREP":
+      case "EM_PREPARO":
         return "text-orange-500";
-      case "READY":
+      case "PRONTO":
         return "text-emerald-400";
+      case "SAIU_ENTREGA":
+        return "text-purple-400";
       case "ENTREGUE":
         return "text-blue-400";
-      case "DELIVERY":
-        return "text-purple-400";
+      case "CANCELADO":
+        return "text-red-400";
       default:
         return "text-zinc-300";
     }
@@ -78,14 +80,16 @@ export default function KdsPage() {
 
   function getBorderColor(status: string) {
     switch (status) {
-      case "IN_PREP":
+      case "EM_PREPARO":
         return "border-orange-500";
-      case "READY":
+      case "PRONTO":
         return "border-emerald-500";
-      case "DELIVERY":
+      case "SAIU_ENTREGA":
         return "border-purple-500";
       case "ENTREGUE":
         return "border-blue-500";
+      case "CANCELADO":
+        return "border-red-500";
       default:
         return "border-zinc-800";
     }
@@ -94,6 +98,12 @@ export default function KdsPage() {
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
       <h1 className="p-4 text-3xl font-bold">Cozinha - Fila de Pedidos</h1>
+
+      {/* Só pra deixar explícito os allowed do backend */}
+      <p className="px-4 text-xs text-zinc-500">
+        Status permitidos: PENDENTE, EM_PREPARO, PRONTO, SAIU_ENTREGA, ENTREGUE, CANCELADO
+      </p>
+
       <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-4 p-4">
         {orders.map((order) => (
           <div
@@ -146,25 +156,25 @@ export default function KdsPage() {
             </div>
 
             <div className="flex flex-col gap-2">
-              {order.status === "PENDING" && (
+              {order.status === "PENDENTE" && (
                 <button
-                  onClick={() => updateStatus(order.id, "IN_PREP")}
+                  onClick={() => updateStatus(order.id, "EM_PREPARO")}
                   className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-medium transition-colors"
                 >
                   Iniciar preparo
                 </button>
               )}
 
-              {order.status === "IN_PREP" && (
+              {order.status === "EM_PREPARO" && (
                 <button
-                  onClick={() => updateStatus(order.id, "READY")}
+                  onClick={() => updateStatus(order.id, "PRONTO")}
                   className="w-full px-3 py-2 bg-green-600 hover:bg-green-700 rounded text-sm font-medium transition-colors"
                 >
                   Finalizar (Pedido pronto)
                 </button>
               )}
 
-              {order.status === "READY" && (
+              {order.status === "PRONTO" && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => updateStatus(order.id, "ENTREGUE")}
@@ -182,7 +192,8 @@ export default function KdsPage() {
               )}
 
               {(order.status === "ENTREGUE" ||
-                order.status === "DELIVERY") && (
+                order.status === "SAIU_ENTREGA" ||
+                order.status === "CANCELADO") && (
                 <span className="text-xs text-zinc-500 text-center">
                   Pedido finalizado.
                 </span>
