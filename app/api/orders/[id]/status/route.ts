@@ -7,13 +7,22 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await params;
+  const { id } = params;
   const body = await req.json();
-  const { status } = body;
 
-  const allowed = ["PENDING", "IN_PREP", "READY", "DELIVERED", "CANCELLED"];
+  const { status, motoboy_name, motoboy_phone } = body;
+
+  const allowed = [
+    "PENDENTE",
+    "EM_PREPARO",
+    "PRONTO",
+    "SAIU_ENTREGA",
+    "ENTREGUE",
+    "CANCELADO",
+  ];
+
   if (!allowed.includes(status)) {
     return NextResponse.json(
       { error: "Status inválido" },
@@ -23,11 +32,17 @@ export async function PATCH(
 
   try {
     const result = await pool.query(
-      `UPDATE orders
-       SET status = $1, updated_at = NOW()
-       WHERE id = $2
-       RETURNING *`,
-      [status, id]
+      `
+      UPDATE orders
+      SET 
+        status = $1,
+        motoboy_name  = COALESCE($2, motoboy_name),
+        motoboy_phone = COALESCE($3, motoboy_phone),
+        updated_at = NOW()
+      WHERE id = $4
+      RETURNING *
+      `,
+      [status, motoboy_name ?? null, motoboy_phone ?? null, id]
     );
 
     if (result.rowCount === 0) {
@@ -37,8 +52,8 @@ export async function PATCH(
       );
     }
 
-    // Se finalizou, remove da fila
-    if (["READY", "DELIVERED", "CANCELLED"].includes(status)) {
+    // Agora só some da fila quando realmente saiu da cozinha
+    if (["SAIU_ENTREGA", "ENTREGUE", "CANCELADO"].includes(status)) {
       await redis.lrem("kds:queue", 0, id);
     }
 
