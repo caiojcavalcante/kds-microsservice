@@ -42,7 +42,7 @@ export function MainNav() {
         <div className="container flex h-14 items-center">
           <div className="mr-4 flex">
             <Link href="/" className="mr-6 flex items-center space-x-2">
-              <div className="relative h-8 w-8">
+              <div className="relative h-12 w-24">
                 <Image 
                   src="/logo.png" 
                   alt="Ferro e Fogo" 

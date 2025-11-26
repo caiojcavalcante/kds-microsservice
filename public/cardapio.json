@@ -1,0 +1,2237 @@
+[
+    {
+        "id": 590432,
+        "name": "Hambúrguer Artesanal",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 4812820,
+                "idi": 117860,
+                "name": "TOSCANO",
+                "description": "Pão artesão, Blend de linguiça mista 170g, stick de queijo, vinagrete e molho barbecue \n",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/b3c2633805fb60254c8a1d8c87ce8813.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3101355,
+                        "name": "ADICIONAIS ",
+                        "required": 0,
+                        "min": 0,
+                        "max": 4,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22764864,
+                                "name": "milho",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764865,
+                                "name": "mussarela",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764866,
+                                "name": "cebola caramelizada ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764867,
+                                "name": "cebola crispy",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764868,
+                                "name": "presunto",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764869,
+                                "name": "batata palha",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764870,
+                                "name": "stick de queijo",
+                                "description": null,
+                                "max": 4,
+                                "price": 4.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764871,
+                                "name": "anéis de cebola ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764872,
+                                "name": "CATUPIRY",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764873,
+                                "name": "blend de frango 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764874,
+                                "name": "vinagrete",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764876,
+                                "name": "barbecue",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764877,
+                                "name": "blend carne do sol 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764878,
+                                "name": "queijo coalho ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3,
+                                "img": null
+                            },
+                            {
+                                "id": 22764879,
+                                "name": "molho parmesão",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764880,
+                                "name": "MOLHO CASEIRO",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764881,
+                                "name": "Maionese caseira",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764882,
+                                "name": "Ovo",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764883,
+                                "name": "Bacon",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 4812821,
+                "idi": 117860,
+                "name": "GIGA BURGUER ",
+                "description": "Pão tradicional, dois blend de 170g, stick de queijo, queijo cheddar, barbecue, cebola caramelizada e vinagrete ",
+                "price": 38,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/d1b4b636c71c722e1f48c4ad54da9f3f.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 38,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3101356,
+                        "name": "ADICIONAIS ",
+                        "required": 0,
+                        "min": 0,
+                        "max": 4,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22764884,
+                                "name": "milho",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764885,
+                                "name": "mussarela",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764886,
+                                "name": "cebola caramelizada ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764887,
+                                "name": "cebola crispy",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764888,
+                                "name": "presunto",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764889,
+                                "name": "batata palha",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764890,
+                                "name": "stick de queijo",
+                                "description": null,
+                                "max": 4,
+                                "price": 4.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764891,
+                                "name": "anéis de cebola ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764892,
+                                "name": "CATUPIRY",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764893,
+                                "name": "blend de frango 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764894,
+                                "name": "vinagrete",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764896,
+                                "name": "barbecue",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764897,
+                                "name": "blend carne do sol 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764898,
+                                "name": "queijo coalho ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3,
+                                "img": null
+                            },
+                            {
+                                "id": 22764899,
+                                "name": "molho parmesão",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764900,
+                                "name": "MOLHO CASEIRO",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764901,
+                                "name": "Maionese caseira",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764902,
+                                "name": "Ovo",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764903,
+                                "name": "Bacon",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 4812822,
+                "idi": 117860,
+                "name": "FRANGOLINO",
+                "description": "Pão artesanal, blend de frango 170g, catupiry, milho, bacon, cebola crispy e vinagrete ",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e36fb31399c0af00f90accc09b4f27f1.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3101357,
+                        "name": "ADICIONAIS ",
+                        "required": 0,
+                        "min": 0,
+                        "max": 4,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22764904,
+                                "name": "milho",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764905,
+                                "name": "mussarela",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764906,
+                                "name": "cebola caramelizada ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764907,
+                                "name": "cebola crispy",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764908,
+                                "name": "presunto",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764909,
+                                "name": "batata palha",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764910,
+                                "name": "stick de queijo",
+                                "description": null,
+                                "max": 4,
+                                "price": 4.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764911,
+                                "name": "anéis de cebola ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764912,
+                                "name": "CATUPIRY",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764913,
+                                "name": "blend de frango 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764914,
+                                "name": "vinagrete",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764916,
+                                "name": "barbecue",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764917,
+                                "name": "blend carne do sol 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764918,
+                                "name": "queijo coalho ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3,
+                                "img": null
+                            },
+                            {
+                                "id": 22764919,
+                                "name": "molho parmesão",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764920,
+                                "name": "MOLHO CASEIRO",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764921,
+                                "name": "Maionese caseira",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764922,
+                                "name": "Ovo",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764923,
+                                "name": "Bacon",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 4812823,
+                "idi": 117860,
+                "name": "SUPREMACIA CARNE DO SOL",
+                "description": "Pão artesanal, blend de carne do sol 170g, queijo coalho, anéis de cebola, molho parmesão e vinagrete \n\n",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/47bb06b304efa499db160b229b378bf1.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3101358,
+                        "name": "ADICIONAIS ",
+                        "required": 0,
+                        "min": 0,
+                        "max": 4,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22764924,
+                                "name": "milho",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764925,
+                                "name": "mussarela",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764926,
+                                "name": "cebola caramelizada ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764927,
+                                "name": "cebola crispy",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764928,
+                                "name": "presunto",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764929,
+                                "name": "batata palha",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764930,
+                                "name": "stick de queijo",
+                                "description": null,
+                                "max": 4,
+                                "price": 4.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764931,
+                                "name": "anéis de cebola ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764932,
+                                "name": "CATUPIRY",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22764933,
+                                "name": "blend de frango 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764934,
+                                "name": "vinagrete",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764936,
+                                "name": "barbecue",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764937,
+                                "name": "blend carne do sol 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22764938,
+                                "name": "queijo coalho ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3,
+                                "img": null
+                            },
+                            {
+                                "id": 22764939,
+                                "name": "molho parmesão",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764940,
+                                "name": "MOLHO CASEIRO",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764941,
+                                "name": "Maionese caseira",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764942,
+                                "name": "Ovo",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22764943,
+                                "name": "Bacon",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 26806641,
+                                "name": "linguiça mista",
+                                "description": null,
+                                "max": 5,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 4815691,
+                "idi": 117860,
+                "name": "MINI BURGUER",
+                "description": "Mini pão tradicional, mussarela e salada ",
+                "price": 2.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/2d00b015384c6b544bad2948bfb8302c.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 6.99,
+                "min_value_promotional": 4,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3103230,
+                        "name": "ESCOLHA A CARNE ",
+                        "required": 1,
+                        "min": 1,
+                        "max": 3,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22778479,
+                                "name": "MINI BLEND BOVINO ",
+                                "description": null,
+                                "max": 15,
+                                "price": 4,
+                                "img": null
+                            },
+                            {
+                                "id": 22778480,
+                                "name": "MINI BLEND FRANGO",
+                                "description": null,
+                                "max": 15,
+                                "price": 4,
+                                "img": null
+                            },
+                            {
+                                "id": 22778481,
+                                "name": "MINI BLEND TOSCANO",
+                                "description": null,
+                                "max": 15,
+                                "price": 4,
+                                "img": null
+                            }
+                        ]
+                    },
+                    {
+                        "id": 3912113,
+                        "name": "Adicionais",
+                        "required": 0,
+                        "min": 0,
+                        "max": 5,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 28235029,
+                                "name": "Bacoon",
+                                "description": null,
+                                "max": 5,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 28235030,
+                                "name": "cebola caramelizada",
+                                "description": null,
+                                "max": 5,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 4815692,
+                "idi": 117860,
+                "name": "COMBO INFANTIL",
+                "description": "Escolha 6 mini burguer da sua preferencia ",
+                "price": 39.96,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/30f6fd619489a95ad4fa0b68ba054e57.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 39.96,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3103231,
+                        "name": "ESCOLHA A CARNE ",
+                        "required": 1,
+                        "min": 6,
+                        "max": 6,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22778483,
+                                "name": "MINI FRANGO",
+                                "description": null,
+                                "max": 6,
+                                "price": 0,
+                                "img": null
+                            },
+                            {
+                                "id": 22778484,
+                                "name": "MINI TOSCANO",
+                                "description": null,
+                                "max": 6,
+                                "price": 0,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 4894075,
+                "idi": 117860,
+                "name": "CLASSUDO BOVINO",
+                "description": "Pão tradicional, Blend bovino 170g, salada, creme cheddar, mussarela, maionese especial da casa ",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/5ef6fe09443d93ec33265fc30d0a1adf.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3130019,
+                        "name": "ADICIONAIS ",
+                        "required": 0,
+                        "min": 0,
+                        "max": 4,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 22956531,
+                                "name": "milho",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956532,
+                                "name": "Blend toscano 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22956533,
+                                "name": "Blend bovino 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22956534,
+                                "name": "mussarela",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956535,
+                                "name": "cebola caramelizada ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956536,
+                                "name": "cebola crispy",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956537,
+                                "name": "presunto",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956538,
+                                "name": "batata palha",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956539,
+                                "name": "stick de queijo",
+                                "description": null,
+                                "max": 4,
+                                "price": 4.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956540,
+                                "name": "anéis de cebola ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956541,
+                                "name": "CATUPIRY",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            },
+                            {
+                                "id": 22956542,
+                                "name": "blend de frango 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22956543,
+                                "name": "vinagrete",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956545,
+                                "name": "molho barbecue",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956546,
+                                "name": "blend carne do sol 170g",
+                                "description": null,
+                                "max": 4,
+                                "price": 8,
+                                "img": null
+                            },
+                            {
+                                "id": 22956547,
+                                "name": "queijo coalho ",
+                                "description": null,
+                                "max": 4,
+                                "price": 3,
+                                "img": null
+                            },
+                            {
+                                "id": 22956548,
+                                "name": "molho parmesão",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956549,
+                                "name": "MOLHO CASEIRO",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956550,
+                                "name": "Maionese especial da casa ",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956551,
+                                "name": "Ovo",
+                                "description": null,
+                                "max": 4,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 22956552,
+                                "name": "Bacon",
+                                "description": null,
+                                "max": 4,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": 6002803,
+                "idi": 117860,
+                "name": "FRANGOLINO + TOSCANO",
+                "description": "COMBO \num frangolino + um toscano + 150g de batata + guaraná de 1L",
+                "price": 56.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/a146f5c3ea29320a4947385dbc18d1f6.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 56.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6729893,
+                "idi": 117860,
+                "name": "WOMBO COMBO!!",
+                "description": "🔥 WOMBO COMBO!! 🔥\nO combo definitivo chegou pra esmagar a sua fome como num jogo clássico de arcade! 🎮🍔\n\nPrepare-se para uma explosão de sabores com esse verdadeiro código da felicidade da felicidade:\n\n🍟 Batata frita com cheddar cremoso e bacon crocante\n🧅 Anéis de cebola super crocantes\n🧀 Sticks de queijo derretendo por dentro, crocantes por fora\n🍔 Mini hambúrgueres suculentos com queijo derretido\n🌭 Calabresa acebolada no ponto certo, direto da chapa\n🍔🍔 Dois Hambúrgueres “Classudo” — carne 100% bovina, queijo derretido, maionese da casa, alface americana e pão selado. Um verdadeiro clássico com toque de respeito! 😎\n\nTudo isso reunido num combo insano, feito pra compartilhar (ou não 👀) e garantir aquele momento épico com os amigos, no rolê ou em casa mesmo.\n\n⚠️ Atenção: comer esse combo pode causar danos permanentes na sua dieta.\n💥 WOMBO COMBO!! – É muita moral pra um combo só!",
+                "price": 129.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/720ae1a6d3af1d0499431a06a59061a0.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 129.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 590436,
+        "name": "Sanduíches ",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 4812837,
+                "idi": 117860,
+                "name": "BAGUETE DE COSTELA ",
+                "description": "Pão baguete com com costela ",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e8408ce0908ba801d286a0edad6c0efc.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7237168,
+                "idi": 117860,
+                "name": "PÃO BAGUETE DE CUPIM",
+                "description": "Pão baguete com cupim",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e8408ce0908ba801d286a0edad6c0efc.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7237169,
+                "idi": 117860,
+                "name": "PÃO BAGUETE FRANGO",
+                "description": "Pão baguete de Frango ",
+                "price": 25,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e8408ce0908ba801d286a0edad6c0efc.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 789118,
+        "name": "Pratos executivos",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": 0,
+        "items": []
+    },
+    {
+        "id": 590439,
+        "name": "Guarnições",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": 0,
+        "items": [
+            {
+                "id": 6874505,
+                "idi": 117860,
+                "name": "ARROZ DE POLVO CREMOSO",
+                "description": null,
+                "price": 35.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/f568c7eeb46566b06631334ca31c8e30.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 35.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6874506,
+                "idi": 117860,
+                "name": "PORÇÃO DE ARROZ BRANCO ",
+                "description": null,
+                "price": 9.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/eefad6e7bd1ee1717f569707de7e067f.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 9.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6874507,
+                "idi": 117860,
+                "name": "ARROZ BIRO BIRO ",
+                "description": null,
+                "price": 22.49,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/f3dd543becc6f638bdc816d710e474c2.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 22.49,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6874508,
+                "idi": 117860,
+                "name": "ARROZ PIAMONTESE CREMOSO GRANDE",
+                "description": null,
+                "price": 24.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/120201112170357YBpu1ClGH.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 24.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6874509,
+                "idi": 117860,
+                "name": "Fetuccine alho e óleo",
+                "description": null,
+                "price": 21.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/77c0084e4c42df668fad22fb18b90df0.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 21.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7424528,
+                "idi": 117860,
+                "name": "FETTUCCINE AL MARE ",
+                "description": null,
+                "price": 32.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/7cd6318607a2cea4b44158673678c42e.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 32.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 789117,
+        "name": "RISOTOS",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": 0,
+        "items": [
+            {
+                "id": 6615835,
+                "idi": 117860,
+                "name": "MONTE SEU RISOTO",
+                "description": null,
+                "price": 0,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/d33c81f190ada366b45b58109ee472dd.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 23.99,
+                "min_value_promotional": 23.99,
+                "featured": [],
+                "choices": [
+                    {
+                        "id": 3844231,
+                        "name": "MOLHOS EXTRAS ",
+                        "required": 1,
+                        "min": 0,
+                        "max": 5,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 27782578,
+                                "name": "MOLHO BARBECUE ",
+                                "description": null,
+                                "max": 5,
+                                "price": 7.99,
+                                "img": "https://cdn-production.yooga.com.br/943f59634e8e246b0a11ceaeb1cfd505.jpeg"
+                            },
+                            {
+                                "id": 27782579,
+                                "name": "MOLHO AGRIDOCE ",
+                                "description": null,
+                                "max": 5,
+                                "price": 7.99,
+                                "img": "https://cdn-production.yooga.com.br/97e7f3bc06b486c7833a928d01ac8de6.png"
+                            },
+                            {
+                                "id": 27782580,
+                                "name": "MOLHO MADEIRA ",
+                                "description": null,
+                                "max": 5,
+                                "price": 7.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782581,
+                                "name": "MOLHO 4 QUEIJOS ",
+                                "description": null,
+                                "max": 5,
+                                "price": 7.99,
+                                "img": "https://cdn-production.yooga.com.br/f72cce0afa0ff023a7b6f93b126cd28c.png"
+                            },
+                            {
+                                "id": 27782582,
+                                "name": "MOLHO CREME  CHEDDAR ",
+                                "description": null,
+                                "max": 5,
+                                "price": 7.99,
+                                "img": "https://cdn-production.yooga.com.br/97e7f3bc06b486c7833a928d01ac8de6.png"
+                            },
+                            {
+                                "id": 27782577,
+                                "name": "Molho parmesão",
+                                "description": null,
+                                "max": 5,
+                                "price": 7.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782584,
+                                "name": "MOLHO BRANCO ",
+                                "description": null,
+                                "max": 5,
+                                "price": 9.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782585,
+                                "name": "MOLHO MOSTARDA LANCCIENE ",
+                                "description": null,
+                                "max": 5,
+                                "price": 11.99,
+                                "img": null
+                            }
+                        ]
+                    },
+                    {
+                        "id": 3844230,
+                        "name": "PROTEINAS EXTRAS",
+                        "required": 0,
+                        "min": 0,
+                        "max": 3,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 27782562,
+                                "name": "Ovo",
+                                "description": null,
+                                "max": 3,
+                                "price": 2,
+                                "img": null
+                            },
+                            {
+                                "id": 27782563,
+                                "name": "Filé mignon 150g",
+                                "description": null,
+                                "max": 3,
+                                "price": 16,
+                                "img": null
+                            },
+                            {
+                                "id": 27782564,
+                                "name": "Contra file 200g  ",
+                                "description": null,
+                                "max": 3,
+                                "price": 11.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782565,
+                                "name": "Lombo suíno 200g ",
+                                "description": null,
+                                "max": 3,
+                                "price": 9.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782566,
+                                "name": "Linguiça Toscana 200g ",
+                                "description": null,
+                                "max": 3,
+                                "price": 9.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782567,
+                                "name": "Baby beef 200g ",
+                                "description": null,
+                                "max": 3,
+                                "price": 9.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782568,
+                                "name": "Picanha medalhão Nacional  150g ",
+                                "description": null,
+                                "max": 3,
+                                "price": 15.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782569,
+                                "name": "File de frango 200g",
+                                "description": null,
+                                "max": 3,
+                                "price": 8.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782570,
+                                "name": "MEDALHÃO DE PICANHA AUSTRALIANA 150G",
+                                "description": null,
+                                "max": 3,
+                                "price": 19.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782571,
+                                "name": "Contra file 200g  ",
+                                "description": null,
+                                "max": 3,
+                                "price": 11.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782572,
+                                "name": "File de frango 200g",
+                                "description": null,
+                                "max": 3,
+                                "price": 8.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782573,
+                                "name": "BIFE DE CHORIZO 150 G ",
+                                "description": null,
+                                "max": 3,
+                                "price": 14.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782574,
+                                "name": "BIFE ANCHO ",
+                                "description": null,
+                                "max": 3,
+                                "price": 15.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782575,
+                                "name": "ALMONDEGAS DE CARNE BOVINA ",
+                                "description": null,
+                                "max": 3,
+                                "price": 18.99,
+                                "img": null
+                            },
+                            {
+                                "id": 27782576,
+                                "name": "Bacon",
+                                "description": null,
+                                "max": 3,
+                                "price": 3.99,
+                                "img": null
+                            }
+                        ]
+                    },
+                    {
+                        "id": 3844229,
+                        "name": "RISOTO",
+                        "required": 1,
+                        "min": 1,
+                        "max": 100,
+                        "use_greater_option_price": 0,
+                        "options": [
+                            {
+                                "id": 27782554,
+                                "name": "RISOTO DE ALHO PORO",
+                                "description": "O risoto de alho-poró é cremoso e delicado, com arroz arbóreo absorvendo o sabor suave e adocicado do alho-poró. Cozido com manteiga e caldo de legumes, é finalizado com queijo parmesão e pimenta-do-reino, oferecendo um prato elegante e cheio de sabor.",
+                                "max": 100,
+                                "price": 23.99,
+                                "img": "https://cdn-production.yooga.com.br/b727a501e6e2767216d687093243aa3e.jpeg"
+                            },
+                            {
+                                "id": 27782555,
+                                "name": "RISOTO COGUMELO FUNGUI ",
+                                "description": "O risoto de cogumelo funghi é cremoso e aromático, feito com arroz arbóreo e cogumelos funghi secos, que proporcionam um sabor intenso e terroso. Finalizado com queijo parmesão e pimenta-do-reino, é um prato sofisticado e reconfortante.",
+                                "max": 100,
+                                "price": 27.99,
+                                "img": "https://cdn-production.yooga.com.br/bf380024d83ae11b2bedbe0417d22799.jpeg"
+                            },
+                            {
+                                "id": 27782558,
+                                "name": "RISOTO DE PARMESÃO",
+                                "description": "O risoto de parmesão é cremoso e cheio de sabor, com arroz arbóreo absorvendo caldo de legumes e sendo finalizado com queijo parmesão derretido. É um prato simples, mas sofisticado, com um toque de pimenta-do-reino e manteiga, ideal para quem aprecia o sabor intenso do queijo.",
+                                "max": 100,
+                                "price": 25.99,
+                                "img": "https://cdn-production.yooga.com.br/33fb6e76740d780d7357b6c468fedf75.jpeg"
+                            },
+                            {
+                                "id": 27782559,
+                                "name": "RISOTO DE CAMARÃO",
+                                "description": "O risoto de camarão é cremoso e sofisticado, com arroz arbóreo absorvendo caldo aromático e camarões suculentos que adicionam frescor. Finalizado com parmesão e ervas frescas, é um prato elegante e delicioso.",
+                                "max": 100,
+                                "price": 29.99,
+                                "img": "https://cdn-production.yooga.com.br/7575eeb0cd57079602affec60387e2d4.jpeg"
+                            },
+                            {
+                                "id": 27782560,
+                                "name": "RISOTO DE QUEIJO BRIE COM LASCAS DE BACON",
+                                "description": "O risoto de queijo brie com lascas de bacon é cremoso e saboroso, com arroz arbóreo absorvendo caldo e queijo brie derretido, enquanto as lascas de bacon crocantes adicionam um toque defumado. É um prato sofisticado e reconfortante.",
+                                "max": 100,
+                                "price": 32.99,
+                                "img": "https://cdn-production.yooga.com.br/0551f683aaaa83f4710e57d7c8376046.jpeg"
+                            },
+                            {
+                                "id": 27782561,
+                                "name": "RISOTO DE FILET MIGNON",
+                                "description": "O risoto de filé mignon ao molho madeira é cremoso, com arroz arbóreo absorvendo caldo e pedaços suculentos de filé mignon. O molho madeira adiciona um sabor intenso e requintado, e o prato é finalizado com parmesão e ervas frescas.",
+                                "max": 100,
+                                "price": 32.99,
+                                "img": "https://cdn-production.yooga.com.br/fc0e462123758dd4a273b9b243b16760.jpeg"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": 590434,
+        "name": "Fritas ",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 6039061,
+                "idi": 117860,
+                "name": "Anéis de Cebola",
+                "description": null,
+                "price": 18,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/9428a268dce2410ca4f8b049dfd03463.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 18,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6039062,
+                "idi": 117860,
+                "name": "Stick de Queijo",
+                "description": null,
+                "price": 18,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/f69e650b9f4e16929fd72bbb3b636655.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 18,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7191834,
+                "idi": 117860,
+                "name": "Frango em crosta",
+                "description": null,
+                "price": 49.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/c3911d852d3a2fe42a56b3dd1e693113.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 49.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 590433,
+        "name": "Refrigerantes",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 4761703,
+                "idi": 117860,
+                "name": "Guaraná pet 1L",
+                "description": null,
+                "price": 9,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/d6fb19c5d488d3c7480982b8115b865a.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 9,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4761702,
+                "idi": 117860,
+                "name": "Coca Cola pet 1L",
+                "description": null,
+                "price": 10,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e8f05d8e1102dd55d3d2de0378f116bf.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 10,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4761699,
+                "idi": 117860,
+                "name": "Pepsi Lata ",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/459fa4c0a34c06fec44b9f5fce410631.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4761698,
+                "idi": 117860,
+                "name": "Fanta lata",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e247e04a601f5a59777965b3156d25bb.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4761697,
+                "idi": 117860,
+                "name": "Guaraná lata ",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/71fbdac6ece6fd3da96c110ae0caea5a.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4761696,
+                "idi": 117860,
+                "name": "Coca Cola lata",
+                "description": null,
+                "price": 6,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/a55afeb28e98cba5fb66dd10c3435a6e.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 6,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4816091,
+                "idi": 117860,
+                "name": "Coca Cola zero lata",
+                "description": null,
+                "price": 6,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/11c896d34cbcff687d615b109640e6d0.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 6,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 4816092,
+                "idi": 117860,
+                "name": "Schweppes Citrus",
+                "description": null,
+                "price": 6,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/a810d006bdf846861f1f05dce6145b7c.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 6,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6631098,
+                "idi": 117860,
+                "name": "Coca Cola zero Pet 1L",
+                "description": null,
+                "price": 10,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/f6de0fffb949ed9ac66e4145f80fcfad.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 10,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6631099,
+                "idi": 117860,
+                "name": "Guaraná lata zero ",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/3d964da56044fa13df6708f36f542dc5.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6631100,
+                "idi": 117860,
+                "name": "Pepsi zero lata",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/52a5d67108ba53dca0a9d7919851c403.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7557263,
+                "idi": 117860,
+                "name": "Soda lata ",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/1f5ad1dc35ac51c3ddfc0b60f923c231.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 633289,
+        "name": "SUCOS",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 5188392,
+                "idi": 117860,
+                "name": "Suco de Laranja ",
+                "description": "400ml",
+                "price": 8,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": null,
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 8,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 5470629,
+                "idi": 117860,
+                "name": "suco de laranja 900ml",
+                "description": null,
+                "price": 18,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": null,
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 18,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 5473129,
+                "idi": 117860,
+                "name": "suco de cacau 900ml",
+                "description": null,
+                "price": 10,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": null,
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 10,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6731987,
+                "idi": 117860,
+                "name": "Suco de goiaba 400ml  ",
+                "description": null,
+                "price": 5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/81f8d7de5c321d4d91ee259b7483095b.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7160059,
+                "idi": 117860,
+                "name": "Suco de mangaba copo ",
+                "description": null,
+                "price": 7,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/120201112170357YBpu1ClGH.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 7,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 590437,
+        "name": "Cervejas",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 4761708,
+                "idi": 117860,
+                "name": "Heineck long neck",
+                "description": null,
+                "price": 10,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/2fb61f4d93f2931cd97dacd812101e58.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 10,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6631103,
+                "idi": 117860,
+                "name": "Coronita ",
+                "description": null,
+                "price": 8,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/e079eb4dd7d7c1f70f7bfb63bab5eef4.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 8,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6937979,
+                "idi": 117860,
+                "name": "CHOPP  HEINEKEN 400ML  PROMOCIONAL ",
+                "description": null,
+                "price": 9.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/6ea421d11ba16dba8a76906d5396c5f3.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 9.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7154901,
+                "idi": 117860,
+                "name": "CORONA 330ML",
+                "description": null,
+                "price": 12,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/f5ea28a9a215841a08a62d6cd3aa743d.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 12,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 590438,
+        "name": "AGUA ",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": null,
+        "items": [
+            {
+                "id": 4761709,
+                "idi": 117860,
+                "name": "Àgua s/gás 500ml",
+                "description": null,
+                "price": 2.5,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/d83ee60e7b503ba8c2da4f8e74d5a9b1.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 2.5,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 814222,
+        "name": "Cortes de carne",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": 1,
+        "items": [
+            {
+                "id": 6860935,
+                "idi": 117860,
+                "name": "PICANHA SUÍNA PORÇÃO 400G  ",
+                "description": "Corte de picanha suína acompanhada de farofa, vinagrete, batata frita e anéis de cebola.",
+                "price": 69.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/84eab93788261e268173c7cb3b6481c6.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 69.99,
+                "min_value_promotional": 0,
+                "featured": [
+                    {
+                        "id": 16384,
+                        "store_item_id": 6860935,
+                        "featured_type": "OFFER"
+                    }
+                ],
+                "choices": []
+            },
+            {
+                "id": 6861457,
+                "idi": 117860,
+                "name": "PICANHA AUSTRALIANA MEDALHÃO 500g",
+                "description": "CORTES DE PICANHA AUSTRALIANA MEDALHÃO, ACOMPANHADA DE FAROFA, VINAGRETE, BATATA FRITA E ANÉIS DE CEBOLA .",
+                "price": 149.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/db35ea4bc406728e6b3ec5daa39975fa.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 149.99,
+                "min_value_promotional": 0,
+                "featured": [
+                    {
+                        "id": 16385,
+                        "store_item_id": 6861457,
+                        "featured_type": "OFFER"
+                    }
+                ],
+                "choices": []
+            },
+            {
+                "id": 6861458,
+                "idi": 117860,
+                "name": "LINGUIÇA APIMENTADA DE COSTELA COM QUEIJO",
+                "description": "LINGUIÇA LEVEMENTE APIMENTADA E RECHEADA COM QUEIJO COALHO ACOMPANHADA DE FAROFA E VINAGRETE.",
+                "price": 44.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/120201112170357YBpu1ClGH.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 44.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6861459,
+                "idi": 117860,
+                "name": "FILÉ MIGNON MEDALHÃO 500g ",
+                "description": "MEDALHÃO DE FILÉ MIGNON GRELHADO E REGADO A MOLHO MADEIRA , SERVIDO COM LEGUMES NA MANTEIGA, FAROFA E VINAGRETE.",
+                "price": 99.9,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/eec41a6a7c9e4596168db7b4c0b2e2f4.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 99.9,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6861460,
+                "idi": 117860,
+                "name": "Cupim de colher c/ queijo ",
+                "description": "CUPIM COM QUEIJO MUSSARELA ACOMPANHADO DE FAROFA E VINAGRETE.",
+                "price": 79.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/120201112170357YBpu1ClGH.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 79.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6861462,
+                "idi": 117860,
+                "name": "Picanha nacional 500g",
+                "description": "MEDALHÃO DE PICANHA GRELHADA ACOMPANHADA DE FAROFA,VINAGRETE, BATATA E ANÉIS DE CEBOLA.",
+                "price": 89.9,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/120201112170357YBpu1ClGH.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 89.9,
+                "min_value_promotional": 0,
+                "featured": [
+                    {
+                        "id": 16386,
+                        "store_item_id": 6861462,
+                        "featured_type": "OFFER"
+                    }
+                ],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 815659,
+        "name": "Petiscos",
+        "schedule_available": "1111111",
+        "schedule_type": 0,
+        "has_multiple_selection": 0,
+        "items": [
+            {
+                "id": 6874510,
+                "idi": 117860,
+                "name": "Filé com fritas ",
+                "description": null,
+                "price": 42.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/3f3d414b14302bba1dd2422c016bbb74.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 42.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6874511,
+                "idi": 117860,
+                "name": "CARNE DO SOL,MACAXEIRA E COALHO",
+                "description": null,
+                "price": 42.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/fba70c720a222404bafd17c070527fac.jpeg",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 42.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6877340,
+                "idi": 117860,
+                "name": "CROQUETE CAIPIRA",
+                "description": null,
+                "price": 25.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/52eeb284a23a7e1bcc7dd4470a765991.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 6877341,
+                "idi": 117860,
+                "name": "CROQUETE VACA LOKA  ( COSTELA)",
+                "description": null,
+                "price": 25.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/52eeb284a23a7e1bcc7dd4470a765991.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 25.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7258236,
+                "idi": 117860,
+                "name": "CROQUETE CAIPIRA UNIDADE",
+                "description": null,
+                "price": 4.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/52eeb284a23a7e1bcc7dd4470a765991.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 4.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7258237,
+                "idi": 117860,
+                "name": "CROQUETE VACA LOKA  ( COSTELA) UNIDADE",
+                "description": null,
+                "price": 4.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/52eeb284a23a7e1bcc7dd4470a765991.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 4.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            },
+            {
+                "id": 7258238,
+                "idi": 117860,
+                "name": "CROQUETE NORDESTINO UNIDADE",
+                "description": null,
+                "price": 4.99,
+                "promotional_price": null,
+                "promotional_percentage": null,
+                "img": "https://cdn-production.yooga.com.br/3ce7388354abf7857ea60c1b0ede89c1.png",
+                "schedule_available": "1111111",
+                "schedule_type": 0,
+                "min_value": 4.99,
+                "min_value_promotional": 0,
+                "featured": [],
+                "choices": []
+            }
+        ]
+    },
+    {
+        "id": 821865,
+        "name": "Feijoada",
+        "schedule_available": "1000011",
+        "schedule_type": 0,
+        "has_multiple_selection": 0,
+        "items": []
+    }
+]
