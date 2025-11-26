@@ -59,8 +59,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    // Ex: A123
-    const code = "A" + Math.floor(100 + Math.random() * 900);
+    const code = "FF" + customer_phone.toString().slice(-3) + Date.now().toString().slice(-3);
     const status = "PENDENTE";
 
     const orderPayload = {
