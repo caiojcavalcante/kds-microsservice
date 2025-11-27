@@ -1,9 +1,7 @@
 import { createServerClient } from "@/utils/supabase/server"
-import { AlertTriangle, CheckCircle2, Clock, Flame, Package, Truck, Settings } from "lucide-react"
-
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { AlertTriangle, Settings } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+import { AdminClient } from "./client"
 
 type OrderItem = {
   product_name: string
@@ -42,13 +40,17 @@ export default async function AdminPage() {
 
   const safeOrders: OrderRow[] = (orders || []) as any
 
-  // stats por status
-  const stats = safeOrders.reduce<Record<string, number>>((acc, o) => {
-    acc[o.status] = (acc[o.status] || 0) + 1
-    return acc
-  }, {})
-
-  const total = safeOrders.length
+  // Fetch menu
+  const fs = require("fs")
+  const path = require("path")
+  const menuPath = path.join(process.cwd(), "public", "cardapio.json")
+  let menu = []
+  try {
+    const fileContents = fs.readFileSync(menuPath, "utf8")
+    menu = JSON.parse(fileContents)
+  } catch (e) {
+    console.error("Erro ao ler cardapio:", e)
+  }
 
   return (
     <main className="min-h-screen bg-background p-4 md:p-8">
@@ -79,121 +81,7 @@ export default async function AdminPage() {
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatsCard
-            title="Novos"
-            value={stats["PENDENTE"] || 0}
-            icon={Clock}
-            className="border-l-4 border-l-amber-500"
-          />
-          <StatsCard
-            title="Em Preparo"
-            value={stats["EM_PREPARO"] || 0}
-            icon={Flame}
-            className="border-l-4 border-l-orange-500"
-          />
-          <StatsCard
-            title="Prontos"
-            value={stats["PRONTO"] || 0}
-            icon={CheckCircle2}
-            className="border-l-4 border-l-emerald-500"
-          />
-          <StatsCard
-            title="Total (100)"
-            value={total}
-            icon={Package}
-            description="Últimos pedidos"
-          />
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Histórico de Pedidos</CardTitle>
-            <CardDescription>
-              Últimos 100 pedidos registrados no sistema
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {total === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                <Package className="h-12 w-12 mb-4 opacity-20" />
-                <p>Nenhum pedido encontrado</p>
-              </div>
-            ) : (
-              <div className="rounded-md border">
-                <div className="relative w-full overflow-auto">
-                  <table className="w-full caption-bottom text-sm">
-                    <thead className="[&_tr]:border-b">
-                      <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                          Código
-                        </th>
-                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                          Status
-                        </th>
-                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                          Tipo
-                        </th>
-                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                          Cliente
-                        </th>
-                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                          Criado em
-                        </th>
-                        <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">
-                          Resumo
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="[&_tr:last-child]:border-0">
-                      {safeOrders.map((order) => (
-                        <tr
-                          key={order.id}
-                          className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                        >
-                          <td className="p-4 align-middle font-medium">
-                            {order.code}
-                          </td>
-                          <td className="p-4 align-middle">
-                            <StatusBadge status={order.status} />
-                          </td>
-                          <td className="p-4 align-middle">
-                            <Badge variant="outline" className="text-[10px]">
-                              {order.service_type}
-                            </Badge>
-                          </td>
-                          <td className="p-4 align-middle">
-                            <div className="flex flex-col">
-                              <span className="font-medium">
-                                {order.customer_name || "—"}
-                              </span>
-                              {order.table_number && (
-                                <span className="text-xs text-muted-foreground">
-                                  Mesa {order.table_number}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="p-4 align-middle text-muted-foreground">
-                            {new Date(order.created_at).toLocaleTimeString(
-                              "pt-BR",
-                              { hour: "2-digit", minute: "2-digit" }
-                            )}
-                          </td>
-                          <td className="p-4 align-middle">
-                            <span className="text-xs text-muted-foreground">
-                              {order.items?.length || 0} itens
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <AdminClient initialOrders={safeOrders} menu={menu} />
 
         <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-amber-500">
           <AlertTriangle className="h-4 w-4" />
@@ -205,76 +93,4 @@ export default async function AdminPage() {
       </div>
     </main>
   )
-}
-
-function StatsCard({
-  title,
-  value,
-  icon: Icon,
-  description,
-  className,
-}: {
-  title: string
-  value: number
-  icon: any
-  description?: string
-  className?: string
-}) {
-  return (
-    <Card className={className}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
-      </CardContent>
-    </Card>
-  )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  switch (status) {
-    case "PENDENTE":
-      return (
-        <Badge variant="outline" className="border-amber-500 text-amber-500">
-          Pendente
-        </Badge>
-      )
-    case "EM_PREPARO":
-      return (
-        <Badge variant="outline" className="border-orange-500 text-orange-500">
-          Em Preparo
-        </Badge>
-      )
-    case "PRONTO":
-      return (
-        <Badge variant="outline" className="border-emerald-500 text-emerald-500">
-          Pronto
-        </Badge>
-      )
-    case "SAIU_ENTREGA":
-      return (
-        <Badge variant="outline" className="border-purple-500 text-purple-500">
-          Saiu p/ Entrega
-        </Badge>
-      )
-    case "ENTREGUE":
-      return (
-        <Badge variant="outline" className="border-blue-500 text-blue-500">
-          Entregue
-        </Badge>
-      )
-    case "CANCELADO":
-      return (
-        <Badge variant="outline" className="border-red-500 text-red-500">
-          Cancelado
-        </Badge>
-      )
-    default:
-      return <Badge variant="outline">{status}</Badge>
-  }
 }

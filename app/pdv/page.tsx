@@ -199,6 +199,17 @@ function ProductCustomizer({
     return total * quantity
   }
 
+  const isValid = () => {
+    if (!product.choices) return true
+    return product.choices.every(choice => {
+      if (choice.min > 0) {
+        const selected = selectedOptions[choice.id] || []
+        return selected.length >= choice.min
+      }
+      return true
+    })
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -233,51 +244,58 @@ function ProductCustomizer({
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          {product.choices?.map(choice => (
-            <div key={choice.id} className="space-y-3">
-              <div className="flex justify-between items-baseline">
-                <h3 className="font-semibold text-lg">{choice.name}</h3>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                  {choice.min > 0 ? `Obrigatório (Min ${choice.min})` : "Opcional"} • Max {choice.max}
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {choice.options.map(option => {
-                  const isSelected = (selectedOptions[choice.id] || []).find(o => o.id === option.id)
-                  return (
-                    <div
-                      key={option.id}
-                      onClick={() => toggleOption(choice, option)}
-                      className={cn(
-                        "flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
-                        isSelected 
-                          ? "border-red-600 bg-red-500/5 shadow-sm" 
-                          : "hover:bg-muted/50"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "h-5 w-5 rounded border flex items-center justify-center transition-colors",
-                          isSelected ? "bg-red-600 border-red-600 text-white" : "border-muted-foreground"
-                        )}>
-                          {isSelected && <Check className="h-3 w-3" />}
+          {product.choices?.map(choice => {
+            const currentSelected = selectedOptions[choice.id] || []
+            const isSatisfied = choice.min > 0 ? currentSelected.length >= choice.min : true
+            
+            return (
+              <div key={choice.id} className="space-y-3">
+                <div className="flex justify-between items-baseline">
+                  <h3 className={cn("font-semibold text-lg", !isSatisfied && "text-red-500")}>
+                    {choice.name} {!isSatisfied && "*"}
+                  </h3>
+                  <span className={cn("text-xs px-2 py-1 rounded", !isSatisfied ? "bg-red-100 text-red-600 dark:bg-red-900/30" : "text-muted-foreground bg-muted")}>
+                    {choice.min > 0 ? `Obrigatório (Min ${choice.min})` : "Opcional"} • Max {choice.max}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {choice.options.map(option => {
+                    const isSelected = currentSelected.find(o => o.id === option.id)
+                    return (
+                      <div
+                        key={option.id}
+                        onClick={() => toggleOption(choice, option)}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
+                          isSelected 
+                            ? "border-red-600 bg-red-500/5 shadow-sm" 
+                            : "hover:bg-muted/50"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={cn(
+                            "h-5 w-5 rounded border flex items-center justify-center transition-colors",
+                            isSelected ? "bg-red-600 border-red-600 text-white" : "border-muted-foreground"
+                          )}>
+                            {isSelected && <Check className="h-3 w-3" />}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-medium text-sm">{option.name}</span>
+                            {option.description && <span className="text-xs text-muted-foreground">{option.description}</span>}
+                          </div>
                         </div>
-                        <div className="flex flex-col">
-                          <span className="font-medium text-sm">{option.name}</span>
-                          {option.description && <span className="text-xs text-muted-foreground">{option.description}</span>}
-                        </div>
+                        {option.price > 0 && (
+                          <span className="text-sm font-medium text-green-500">
+                            +{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price)}
+                          </span>
+                        )}
                       </div>
-                      {option.price > 0 && (
-                        <span className="text-sm font-medium text-green-500">
-                          +{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price)}
-                        </span>
-                      )}
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
 
           <div className="space-y-2">
             <Label>Observações</Label>
@@ -308,8 +326,13 @@ function ProductCustomizer({
               notes,
               totalPrice: calculateTotal()
             })}
+            disabled={!isValid()}
           >
-            Adicionar • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateTotal())}
+            {isValid() ? (
+              <>Adicionar • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateTotal())}</>
+            ) : (
+              "Selecione os itens obrigatórios"
+            )}
           </Button>
         </div>
       </motion.div>
@@ -365,14 +388,19 @@ export default function PdvPage() {
         let formattedNotes = item.notes
         const optionsList = Object.values(item.selectedOptions).flat()
         if (optionsList.length > 0) {
-          const optionsText = optionsList.map(o => `+ ${o.name}`).join("\n")
+          const optionsText = optionsList.map(o => {
+            const priceStr = o.price > 0 ? ` (${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(o.price)})` : ""
+            return `+ ${o.name}${priceStr}`
+          }).join("\n")
           formattedNotes = formattedNotes ? `${formattedNotes}\n${optionsText}` : optionsText
         }
 
         return {
           product_name: item.product.name,
           quantity: item.quantity,
-          notes: formattedNotes
+          notes: formattedNotes,
+          price: item.product.price,
+          total_price: item.totalPrice
         }
       })
 
@@ -408,6 +436,13 @@ export default function PdvPage() {
     }
   }
 
+  const isClientDataValid = () => {
+    if (serviceType === "MESA") return tableNumber.trim().length > 0
+    if (serviceType === "DELIVERY") return customerName.trim().length > 0 && customerPhone.trim().length > 0
+    if (serviceType === "BALCAO") return customerName.trim().length > 0
+    return false
+  }
+
   const isDelivery = serviceType === "DELIVERY"
   const isMesa = serviceType === "MESA"
 
@@ -429,9 +464,12 @@ export default function PdvPage() {
           {/* Left Column: Customer Info & Search */}
           <div className="lg:col-span-7 space-y-6">
             {/* Customer Info Card */}
-            <Card className="border-l-4 border-l-red-600 shadow-lg">
+            <Card className={cn("border-l-4 shadow-lg transition-colors", isClientDataValid() ? "border-l-green-500" : "border-l-red-600")}>
               <CardHeader className="pb-3">
-                <CardTitle>Dados do Cliente</CardTitle>
+                <CardTitle className="flex justify-between items-center">
+                  Dados do Cliente
+                  {!isClientDataValid() && <span className="text-xs text-red-500 font-normal">* Obrigatório</span>}
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-2">
@@ -451,7 +489,7 @@ export default function PdvPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {isMesa && (
                     <div className="space-y-2">
-                      <Label>Mesa</Label>
+                      <Label className={cn(tableNumber.trim() === "" && "text-red-500")}>Mesa *</Label>
                       <div className="relative">
                         <Hash className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input 
@@ -464,7 +502,9 @@ export default function PdvPage() {
                     </div>
                   )}
                   <div className="space-y-2">
-                    <Label>Cliente</Label>
+                    <Label className={cn((isDelivery || serviceType === "BALCAO") && customerName.trim() === "" && "text-red-500")}>
+                      Cliente {(isDelivery || serviceType === "BALCAO") && "*"}
+                    </Label>
                     <div className="relative">
                       <User className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                       <Input 
@@ -477,7 +517,7 @@ export default function PdvPage() {
                   </div>
                   {isDelivery && (
                     <div className="space-y-2 md:col-span-2">
-                      <Label>Telefone</Label>
+                      <Label className={cn(customerPhone.trim() === "" && "text-red-500")}>Telefone *</Label>
                       <div className="relative">
                         <Phone className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input 
@@ -576,9 +616,9 @@ export default function PdvPage() {
                   className="w-full shadow-fire h-12 text-lg" 
                   variant="fire"
                   onClick={submitOrder}
-                  disabled={loading || cart.length === 0}
+                  disabled={loading || cart.length === 0 || !isClientDataValid()}
                 >
-                  {loading ? "Enviando..." : (
+                  {loading ? "Enviando..." : !isClientDataValid() ? "Preencha os dados do cliente" : (
                     <>Enviar Pedido <Send className="ml-2 h-5 w-5" /></>
                   )}
                 </Button>

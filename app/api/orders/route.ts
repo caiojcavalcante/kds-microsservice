@@ -55,6 +55,8 @@ export async function POST(req: NextRequest) {
               ? Number(item.quantity)
               : 1,
           notes: item.notes ? String(item.notes) : null,
+          price: (item as any).price ? Number((item as any).price) : 0,
+          total_price: (item as any).total_price ? Number((item as any).total_price) : 0,
         };
       }
     );
