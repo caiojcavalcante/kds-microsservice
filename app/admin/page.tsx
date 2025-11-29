@@ -1,4 +1,6 @@
-import { createServerClient } from "@/utils/supabase/server"
+import { createServerClient } from "@/utils/supabase/admin"
+import { createClient } from "@/utils/supabase/server"
+import { redirect } from "next/navigation"
 import { AlertTriangle, Settings } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { AdminClient } from "./client"
@@ -28,6 +30,13 @@ type OrderRow = {
 export const dynamic = "force-dynamic"
 
 export default async function AdminPage() {
+  const supabaseAuth = await createClient()
+  const { data: { user } } = await supabaseAuth.auth.getUser()
+
+  if (!user) {
+    redirect("/login")
+  }
+
   const supabase = createServerClient()
 
   const { data: orders, error } = await supabase
@@ -82,14 +91,6 @@ export default async function AdminPage() {
         )}
 
         <AdminClient initialOrders={safeOrders} menu={menu} />
-
-        <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-amber-500">
-          <AlertTriangle className="h-4 w-4" />
-          <p className="text-sm">
-            Esta área administrativa deve ser protegida por autenticação em
-            produção.
-          </p>
-        </div>
       </div>
     </main>
   )

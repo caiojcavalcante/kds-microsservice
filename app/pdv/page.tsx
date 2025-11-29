@@ -86,11 +86,11 @@ function ProductSearch({
 
   return (
     <div className="relative w-full z-20">
-      <div className="relative">
-        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+      <div className="relative flex items-center">
+        <Search className="absolute left-5 inset-y-auto h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Buscar produto..."
-          className="pl-9 h-12 text-lg"
+          className="pl-12 h-12 text-lg"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value)
@@ -114,12 +114,12 @@ function ProductSearch({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-full left-0 right-0 mt-2 bg-popover border rounded-lg shadow-xl overflow-hidden max-h-[400px] overflow-y-auto"
+            className="absolute top-full left-0 right-0 mt-2 bg-popover rounded-lg shadow-xl overflow-hidden max-h-[400px] overflow-y-auto"
           >
             {filteredProducts.map(product => (
               <div
                 key={product.id}
-                className="flex items-center gap-4 p-3 hover:bg-accent cursor-pointer transition-colors border-b last:border-0"
+                className="flex items-center gap-4 p-3 hover:bg-accent cursor-pointer transition-colors last:border-0"
                 onClick={() => {
                   onSelect(product)
                   setIsOpen(false)
@@ -221,10 +221,10 @@ function ProductCustomizer({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-background w-full max-w-2xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden border border-border"
+        className="bg-background w-full max-w-2xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Header */}
-        <div className="p-6 border-b flex gap-6 relative">
+        <div className="p-6 flex gap-6 relative">
            {product.img && (
             <div className="relative h-24 w-24 rounded-lg overflow-hidden flex-shrink-0 shadow-md">
               <Image src={product.img} alt={product.name} fill className="object-cover" />
@@ -266,7 +266,7 @@ function ProductCustomizer({
                         key={option.id}
                         onClick={() => toggleOption(choice, option)}
                         className={cn(
-                          "flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all",
+                          "flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all",
                           isSelected 
                             ? "border-red-600 bg-red-500/5 shadow-sm" 
                             : "hover:bg-muted/50"
@@ -308,8 +308,8 @@ function ProductCustomizer({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t bg-muted/20 flex flex-col sm:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-4 bg-background border rounded-lg p-1">
+        <div className="p-6 bg-muted/20 flex flex-col sm:flex-row gap-4 items-center justify-between">
+          <div className="flex items-center gap-4 bg-background rounded-lg p-1">
             <Button variant="ghost" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
             <span className="w-8 text-center font-bold">{quantity}</span>
             <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)}>+</Button>
@@ -399,8 +399,7 @@ export default function PdvPage() {
           product_name: item.product.name,
           quantity: item.quantity,
           notes: formattedNotes,
-          price: item.product.price,
-          total_price: item.totalPrice
+          price: item.product.price
         }
       })
 
@@ -543,7 +542,7 @@ export default function PdvPage() {
           {/* Right Column: Order Summary */}
           <div className="lg:col-span-5 flex flex-col h-full">
             <Card className="flex-1 flex flex-col shadow-lg border-t-4 border-t-red-600 h-[calc(100vh-200px)] sticky top-24">
-              <CardHeader className="pb-4 border-b">
+              <CardHeader className="pb-4">
                 <div className="flex justify-between items-center">
                   <CardTitle>Resumo do Pedido</CardTitle>
                   <Badge variant="secondary">{cart.length} itens</Badge>
@@ -604,7 +603,7 @@ export default function PdvPage() {
                 )}
               </CardContent>
 
-              <CardFooter className="flex-col gap-4 border-t p-6 bg-muted/10">
+              <CardFooter className="flex-col gap-4 p-6 bg-muted/10">
                 <div className="flex justify-between w-full text-lg font-bold">
                   <span>Total</span>
                   <span className="text-2xl text-green-600">

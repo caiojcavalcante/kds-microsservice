@@ -1,0 +1,106 @@
+"use client"
+
+import { useState } from "react"
+import { useFormStatus } from "react-dom"
+import { Flame, Lock, Mail } from "lucide-react"
+import { toast } from "sonner"
+
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { login } from "./actions"
+
+function SubmitButton() {
+  const { pending } = useFormStatus()
+
+  return (
+    <Button 
+      type="submit" 
+      className="w-full shadow-fire" 
+      variant="fire" 
+      disabled={pending}
+    >
+      {pending ? "Entrando..." : "Entrar"}
+    </Button>
+  )
+}
+
+export default function LoginPage() {
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleSubmit(formData: FormData) {
+    setError(null)
+    const res = await login(formData)
+    if (res?.error) {
+      setError(res.error)
+      toast.error(res.error)
+    }
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md border-red-900/20 shadow-2xl">
+        <CardHeader className="space-y-1 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="h-12 w-12 rounded-full bg-red-600/10 flex items-center justify-center">
+              <Flame className="h-6 w-6 text-red-600" />
+            </div>
+          </div>
+          <CardTitle className="text-2xl font-bold">Acesso Restrito</CardTitle>
+          <CardDescription>
+            Digite suas credenciais para acessar o sistema
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form action={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  id="email" 
+                  name="email" 
+                  type="email" 
+                  placeholder="admin@ferroefogo.com" 
+                  required 
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  id="password" 
+                  name="password" 
+                  type="password" 
+                  required 
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            
+            {error && (
+              <div className="text-sm text-red-500 font-medium text-center bg-red-500/10 p-2 rounded">
+                {error}
+              </div>
+            )}
+
+            <SubmitButton />
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-muted-foreground">
+            Não tem uma conta?{" "}
+            <Link href="/signup" className="text-red-500 hover:underline font-medium">
+              Criar conta
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}

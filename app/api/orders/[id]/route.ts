@@ -1,4 +1,4 @@
-import { createServerClient } from "@/utils/supabase/server"
+import { createServerClient } from "@/utils/supabase/admin"
 import { NextRequest, NextResponse } from "next/server"
 
 export async function PUT(

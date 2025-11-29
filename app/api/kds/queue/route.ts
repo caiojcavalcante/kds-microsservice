@@ -1,6 +1,6 @@
 // app/api/kds/queue/route.ts
 import { NextResponse } from "next/server";
-import { createServerClient } from "@/utils/supabase/server";
+import { createServerClient } from "@/utils/supabase/admin";
 
 export async function GET() {
   const supabase = createServerClient();

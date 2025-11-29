@@ -1,6 +1,6 @@
 // app/api/orders/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/utils/supabase/server";
+import { createServerClient } from "@/utils/supabase/admin";
 
 export const dynamic = "force-dynamic"; // evita cache em edge
 
@@ -56,12 +56,12 @@ export async function POST(req: NextRequest) {
               : 1,
           notes: item.notes ? String(item.notes) : null,
           price: (item as any).price ? Number((item as any).price) : 0,
-          total_price: (item as any).total_price ? Number((item as any).total_price) : 0,
         };
       }
     );
 
-    const code = "FF" + customer_phone.toString().slice(-3) + Date.now().toString().slice(-3);
+    const phoneSuffix = customer_phone ? customer_phone.toString().slice(-3) : "000";
+    const code = "FF" + phoneSuffix + Date.now().toString().slice(-3);
     const status = "PENDENTE";
 
     const orderPayload = {

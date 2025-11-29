@@ -1,6 +1,6 @@
 // app/api/orders/[id]/status/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@/utils/supabase/server";
+import { createServerClient } from "@/utils/supabase/admin";
 
 export async function PATCH(
   request: NextRequest,

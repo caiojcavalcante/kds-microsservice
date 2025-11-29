@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { MainNav } from "@/components/main-nav";
+import { SmoothScrolling } from "@/components/smooth-scrolling";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,11 +20,28 @@ export const metadata: Metadata = {
   description: "Sistema de KDS e PDV para Ferro e Fogo Parrilla",
 };
 
-export default function RootLayout({
+import { createClient } from "@/utils/supabase/server";
+
+// ...
+
+import { CartProvider } from "@/contexts/cart-context";
+
+// ...
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  let profile = null;
+  if (user) {
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    profile = data;
+  }
+
   return (
     <html lang="pt-BR" className="dark">
       <body
@@ -33,8 +51,12 @@ export default function RootLayout({
           geistMono.variable
         )}
       >
-        <MainNav />
-        {children}
+        <CartProvider>
+          <SmoothScrolling>
+            <MainNav user={user} profile={profile} />
+            {children}
+          </SmoothScrolling>
+        </CartProvider>
       </body>
     </html>
   );

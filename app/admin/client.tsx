@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { AlertTriangle, CheckCircle2, Clock, Flame, Package, Settings, Search, X, Save, Trash2, Plus, Minus, ChevronDown } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cell } from "recharts"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -14,6 +15,8 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { Textarea } from "@/components/ui/textarea"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { createClient } from "@/utils/supabase/client"
 
 type OrderItem = {
   product_name: string
@@ -52,7 +55,6 @@ type Product = {
   price: number
   img: string | null
 }
-
 export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[], menu: Category[] }) {
   const router = useRouter()
   const [orders, setOrders] = useState(initialOrders)
@@ -60,13 +62,34 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
   const [isPanelOpen, setIsPanelOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase
+      .channel("realtime-admin-orders")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "orders",
+        },
+        () => {
+          router.refresh()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [router])
+
   // Edit State
   const [editForm, setEditForm] = useState<Partial<OrderRow>>({})
   
   // Add Item State
   const [isAddingItem, setIsAddingItem] = useState(false)
   const [itemSearch, setItemSearch] = useState("")
-  const [newItem, setNewItem] = useState<OrderItem>({ product_name: "", quantity: 1, notes: "", price: 0, total_price: 0 })
 
   const handleSelectOrder = (order: OrderRow) => {
     setSelectedOrder(order)
@@ -159,108 +182,265 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
 
   const calculateOrderTotal = (items: OrderItem[] | null) => {
     if (!items) return 0
-    return items.reduce((acc, item) => acc + (item.total_price || 0), 0)
+    return items.reduce((acc, item) => acc + ((item.price || 0) * item.quantity), 0)
   }
+
+  // Analytics Calculations
+  const analytics = useMemo(() => {
+    const today = new Date()
+    const todayOrders = orders.filter(o => {
+      const d = new Date(o.created_at)
+      return d.getDate() === today.getDate() && 
+             d.getMonth() === today.getMonth() && 
+             d.getFullYear() === today.getFullYear() &&
+             o.status !== "CANCELADO"
+    })
+
+    const totalRevenue = todayOrders.reduce((acc, o) => acc + calculateOrderTotal(o.items), 0)
+    const totalOrders = todayOrders.length
+    const avgTicket = totalOrders > 0 ? totalRevenue / totalOrders : 0
+
+    // Hourly Sales
+    const hourlyData = Array.from({ length: 24 }, (_, i) => ({ hour: i, total: 0, count: 0 }))
+    todayOrders.forEach(o => {
+      const hour = new Date(o.created_at).getHours()
+      hourlyData[hour].total += calculateOrderTotal(o.items)
+      hourlyData[hour].count += 1
+    })
+    const chartData = hourlyData.map(d => ({
+      name: `${d.hour}h`,
+      Vendas: d.total,
+      Pedidos: d.count
+    })).filter(d => d.Vendas > 0 || d.Pedidos > 0)
+
+    // Top Items
+    const itemCounts: Record<string, number> = {}
+    todayOrders.forEach(o => {
+      o.items?.forEach(i => {
+        itemCounts[i.product_name] = (itemCounts[i.product_name] || 0) + i.quantity
+      })
+    })
+    const topItems = Object.entries(itemCounts)
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5)
+
+    return { totalRevenue, totalOrders, avgTicket, chartData, topItems }
+  }, [orders])
 
   return (
     <div className="space-y-8">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <StatsCard
-          title="Novos"
-          value={stats["PENDENTE"] || 0}
-          icon={Clock}
-          className="border-l-4 border-l-amber-500"
-        />
-        <StatsCard
-          title="Em Preparo"
-          value={stats["EM_PREPARO"] || 0}
-          icon={Flame}
-          className="border-l-4 border-l-orange-500"
-        />
-        <StatsCard
-          title="Prontos"
-          value={stats["PRONTO"] || 0}
-          icon={CheckCircle2}
-          className="border-l-4 border-l-emerald-500"
-        />
-        <StatsCard
-          title="Total"
-          value={total}
-          icon={Package}
-          description="Últimos 100 pedidos"
-        />
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Histórico de Pedidos</CardTitle>
-          <CardDescription>
-            Clique em um pedido para editar detalhes e status
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {total === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-              <Package className="h-12 w-12 mb-4 opacity-20" />
-              <p>Nenhum pedido encontrado</p>
-            </div>
-          ) : (
-            <div className="rounded-md border">
-              <div className="relative w-full overflow-auto">
-                <table className="w-full caption-bottom text-sm">
-                  <thead className="[&_tr]:border-b">
-                    <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Código</th>
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Tipo</th>
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Cliente</th>
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Criado em</th>
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Itens</th>
-                      <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="[&_tr:last-child]:border-0">
-                    {orders.map((order) => (
-                      <tr
-                        key={order.id}
-                        onClick={() => handleSelectOrder(order)}
-                        className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                      >
-                        <td className="p-4 align-middle font-medium">{order.code}</td>
-                        <td className="p-4 align-middle"><StatusBadge status={order.status} /></td>
-                        <td className="p-4 align-middle">
-                          <Badge variant="outline" className="text-[10px]">{order.service_type}</Badge>
-                        </td>
-                        <td className="p-4 align-middle">
-                          <div className="flex flex-col">
-                            <span className="font-medium">{order.customer_name || "—"}</span>
-                            {order.table_number && <span className="text-xs text-muted-foreground">Mesa {order.table_number}</span>}
-                          </div>
-                        </td>
-                        <td className="p-4 align-middle text-muted-foreground">
-                          {new Date(order.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                        </td>
-                        <td className="p-4 align-middle">
-                          <span className="text-xs text-muted-foreground">{order.items?.length || 0} itens</span>
-                        </td>
-                        <td className="p-4 align-middle font-medium text-green-600">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(order.items))}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="orders" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="orders">Pedidos</TabsTrigger>
+          <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        </TabsList>
 
-      {/* Edit Panel (Sheet) */}
+        <TabsContent value="orders" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <StatsCard
+              title="Novos"
+              value={stats["PENDENTE"] || 0}
+              icon={Clock}
+              className="border-l-4 border-l-amber-500"
+            />
+            <StatsCard
+              title="Em Preparo"
+              value={stats["EM_PREPARO"] || 0}
+              icon={Flame}
+              className="border-l-4 border-l-orange-500"
+            />
+            <StatsCard
+              title="Prontos"
+              value={stats["PRONTO"] || 0}
+              icon={CheckCircle2}
+              className="border-l-4 border-l-emerald-500"
+            />
+            <StatsCard
+              title="Total (Hoje)"
+              value={analytics.totalOrders}
+              icon={Package}
+              description="Pedidos realizados hoje"
+            />
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Histórico de Pedidos</CardTitle>
+              <CardDescription>
+                Clique em um pedido para editar detalhes e status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* ... (Order Table - same as before) ... */}
+              {total === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <Package className="h-12 w-12 mb-4 opacity-20" />
+                  <p>Nenhum pedido encontrado</p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <div className="relative w-full overflow-auto">
+                    <table className="w-full caption-bottom text-sm">
+                      <thead className="[&_tr]:border-b">
+                        <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Código</th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Tipo</th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Cliente</th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Criado em</th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Itens</th>
+                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody className="[&_tr:last-child]:border-0">
+                        {orders.map((order) => (
+                          <tr
+                            key={order.id}
+                            onClick={() => handleSelectOrder(order)}
+                            className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
+                          >
+                            <td className="p-4 align-middle font-medium">{order.code}</td>
+                            <td className="p-4 align-middle"><StatusBadge status={order.status} /></td>
+                            <td className="p-4 align-middle">
+                              <Badge variant="outline" className="text-[10px]">{order.service_type}</Badge>
+                            </td>
+                            <td className="p-4 align-middle">
+                              <div className="flex flex-col">
+                                <span className="font-medium">{order.customer_name || "—"}</span>
+                                {order.table_number && <span className="text-xs text-muted-foreground">Mesa {order.table_number}</span>}
+                              </div>
+                            </td>
+                            <td className="p-4 align-middle text-muted-foreground">
+                              {new Date(order.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                            </td>
+                            <td className="p-4 align-middle">
+                              <span className="text-xs text-muted-foreground">{order.items?.length || 0} itens</span>
+                            </td>
+                            <td className="p-4 align-middle font-medium text-green-600">
+                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(order.items))}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Receita Total (Hoje)</CardTitle>
+                <span className="text-green-500 font-bold">$</span>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(analytics.totalRevenue)}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Pedidos (Hoje)</CardTitle>
+                <Package className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{analytics.totalOrders}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Ticket Médio</CardTitle>
+                <span className="text-muted-foreground text-xs">Média por pedido</span>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(analytics.avgTicket)}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+            <Card className="col-span-4">
+              <CardHeader>
+                <CardTitle>Vendas por Hora</CardTitle>
+              </CardHeader>
+              <CardContent className="pl-2">
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={analytics.chartData}>
+                      <XAxis 
+                        dataKey="name" 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false} 
+                      />
+                      <YAxis 
+                        stroke="#888888" 
+                        fontSize={12} 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tickFormatter={(value) => `R$${value}`} 
+                      />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: 'var(--background)', borderColor: 'var(--border)' }}
+                        itemStyle={{ color: 'var(--foreground)' }}
+                        formatter={(value: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)}
+                      />
+                      <Bar dataKey="Vendas" fill="currentColor" radius={[4, 4, 0, 0]} className="fill-red-600" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="col-span-3">
+              <CardHeader>
+                <CardTitle>Mais Vendidos</CardTitle>
+                <CardDescription>Top 5 itens de hoje</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-8">
+                  {analytics.topItems.map((item, index) => (
+                    <div key={item.name} className="flex items-center">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted border text-sm font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="ml-4 space-y-1">
+                        <p className="text-sm font-medium leading-none">{item.name}</p>
+                        <p className="text-sm text-muted-foreground">{item.count} unidades</p>
+                      </div>
+                      <div className="ml-auto font-medium">
+                        {/* Optional: Add revenue per item if available */}
+                      </div>
+                    </div>
+                  ))}
+                  {analytics.topItems.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center">Nenhum dado ainda.</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+      </Tabs>
+
+      {/* Edit Panel (Sheet) - Same as before */}
       <AnimatePresence>
         {isPanelOpen && selectedOrder && (
+          // ... (Edit Panel Content) ...
           <>
-            <motion.div
+             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -274,7 +454,8 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 right-0 z-50 h-full w-full sm:w-[600px] bg-background shadow-2xl border-l flex flex-col"
             >
-              <div className="flex items-center justify-between p-6 border-b">
+               {/* ... (Edit Panel Body) ... */}
+               <div className="flex items-center justify-between p-6 border-b">
                 <div>
                   <h2 className="text-lg font-semibold">Editar Pedido</h2>
                   <p className="text-sm text-muted-foreground">#{selectedOrder.code}</p>
@@ -386,7 +567,7 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
 
                   <div className="space-y-3">
                     {editForm.items?.map((item, idx) => (
-                      <div key={idx} className="flex flex-col gap-2 p-3 rounded-lg border bg-muted/30">
+                      <div key={idx} className="flex flex-col gap-2 p-3 rounded-lg border border-red-950/70 bg-muted/30">
                         <div className="flex justify-between items-start">
                           <div className="font-medium flex items-center gap-2">
                             <span className="text-xs bg-background border px-1.5 py-0.5 rounded font-bold">
@@ -396,7 +577,7 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
                           </div>
                           <div className="flex items-center gap-2">
                              <span className="text-sm font-semibold text-green-600">
-                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.total_price || 0)}
+                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((item.price || 0) * item.quantity)}
                             </span>
                             <Button
                               variant="ghost"
@@ -471,6 +652,8 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
     </div>
   )
 }
+
+// ... (StatsCard, StatusBadge, getStatusColor, formatStatus - keep as is)
 
 function StatsCard({
   title,

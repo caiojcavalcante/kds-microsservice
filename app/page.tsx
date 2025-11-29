@@ -14,16 +14,25 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+import Image from "next/image"
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 md:p-24">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background p-4 md:p-24 overflow-hidden">
       <div className="z-10 w-full max-w-5xl items-center justify-between text-sm lg:flex">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="fixed left-0 top-0 flex w-full justify-center border-b bg-background/80 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30"
+          className="sm:hidden fixed left-0 top-0 flex flex-col items-center w-full justify-center border-b bg-black pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30"
         >
+          <Image
+            src="/logo.jpeg"
+            alt="Logo"
+            width={100}
+            height={100}
+            className="mr-2 mix-blend-screen"
+          />
           <code className="font-mono font-bold text-red-600">
             Ferro e Fogo Parrilla
           </code>
