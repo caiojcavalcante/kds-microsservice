@@ -261,7 +261,7 @@ export default function CardapioPage() {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {displayedCategories.map((category, idx) => {
-                const categoryImage = category.items.find(i => i.img)?.img || null
+                const categoryImage = category.items.find((i: any) => i.img)?.img || null
                 return (
                   <Link
                     href={`/cardapio/${slugify(category.name)}`}
