@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, Trash2, Send, CreditCard, Wallet, Banknote, ShoppingCart, ChevronLeft, ChevronRight } from "lucide-react"
+import { ArrowLeft, Trash2, Send, CreditCard, Wallet, Banknote, ShoppingCart, ChevronLeft, ChevronRight, Check } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -16,6 +16,72 @@ import menuData from "@/app/data/menu.json"
 import Image from "next/image"
 
 type ServiceType = "MESA" | "DELIVERY" | "BALCAO"
+
+function UpsellItem({ drink, addToCart }: { drink: any, addToCart: any }) {
+  const [isAdded, setIsAdded] = useState(false)
+
+  const handleAdd = () => {
+    addToCart({
+      product: drink,
+      quantity: 1,
+      selectedOptions: {},
+      notes: "",
+      totalPrice: drink.price
+    })
+    setIsAdded(true)
+    setTimeout(() => setIsAdded(false), 2000)
+  }
+
+  return (
+    <div className="relative flex-shrink-0 w-32 bg-background rounded-xl border p-2 shadow-sm flex flex-col gap-2 group">
+      <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-muted">
+        {drink.img && (
+          <Image src={drink.img} alt={drink.name} fill className="object-cover" />
+        )}
+      </div>
+
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        onClick={handleAdd}
+        className={cn(
+          "absolute top-1 right-1 h-8 w-8 rounded-full shadow-md z-10 flex items-center justify-center transition-colors duration-300",
+          isAdded ? "bg-green-500 text-white" : "bg-black text-red-500 hover:bg-black/90"
+        )}
+      >
+        <AnimatePresence mode="wait">
+          {isAdded ? (
+            <motion.div
+              key="check"
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: 180 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Check className="h-4 w-4" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="cart"
+              initial={{ scale: 0, rotate: 180 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0, rotate: -180 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ShoppingCart className="h-4 w-4" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
+
+      <div className="flex-1 space-y-1">
+        <p className="text-xs font-medium line-clamp-2 leading-tight" title={drink.name}>{drink.name}</p>
+        <p className="text-sm text-green-600 font-bold">
+          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(drink.price)}
+        </p>
+      </div>
+    </div>
+  )
+}
 
 export default function CartPage() {
   const { cart, removeFromCart, cartTotal, clearCart, addToCart, updateQuantity } = useCart()
@@ -172,19 +238,19 @@ export default function CartPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -100 }}
-                    className="bg-card border rounded-xl p-1 md:p-2 flex gap-2 md:gap-3 shadow-sm items-start max-w-[calc(100vw-2rem)]"
+                    className="bg-card border rounded-xl p-1 md:p-2 flex gap-2 md:gap-3 shadow-sm items-center max-w-[calc(100vw-2rem)]"
                   >
                     {/* Image */}
-                    <div className="relative h-20 w-20 md:h-24 md:w-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                    <div className="relative h-30 w-30 md:h-24 md:w-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                       {item.product.img && (
                         <Image src={item.product.img} alt={item.product.name} fill className="object-cover" />
                       )}
                     </div>
 
                     {/* Details */}
-                    <div className="flex-1 min-w-0 my-auto">
+                    <div className="flex-1 min-w-0 px-4">
                       <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-bold text-lg leading-tight">{item.product.name}</h3>
+                        <h3 className="text-lg leading-tight">{item.product.name}</h3>
                         <span className="font-bold text-green-500 whitespace-nowrap ml-2">
                           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.totalPrice)}
                         </span>
@@ -349,34 +415,7 @@ export default function CartPage() {
 
                   <div ref={scrollRef} className="flex w-full overflow-x-auto gap-3 pb-2 -mx-3 px-3 md:-mx-4 md:px-4 scrollbar-hide scroll-smooth">
                     {drinks.map((drink: any) => (
-                      <div key={drink.id} className="relative flex-shrink-0 w-32 bg-background rounded-xl border p-2 shadow-sm flex flex-col gap-2 group">
-                        <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-muted">
-                          {drink.img && (
-                            <Image src={drink.img} alt={drink.name} fill className="object-cover" />
-                          )}
-                        </div>
-
-                        <Button
-                          size="icon"
-                          className="absolute top-1 right-1 h-8 w-8 rounded-full bg-black hover:bg-black/90 shadow-md z-10"
-                          onClick={() => addToCart({
-                            product: drink,
-                            quantity: 1,
-                            selectedOptions: {},
-                            notes: "",
-                            totalPrice: drink.price
-                          })}
-                        >
-                          <ShoppingCart className="h-4 w-4 text-red-500" />
-                        </Button>
-
-                        <div className="flex-1 space-y-1">
-                          <p className="text-xs font-medium line-clamp-2 leading-tight" title={drink.name}>{drink.name}</p>
-                          <p className="text-sm text-green-600 font-bold">
-                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(drink.price)}
-                          </p>
-                        </div>
-                      </div>
+                      <UpsellItem key={drink.id} drink={drink} addToCart={addToCart} />
                     ))}
                   </div>
                 </div>
