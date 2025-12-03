@@ -45,19 +45,19 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       {/* Hero Image (Optional - using first item image) */}
       {category.items[0]?.img && (
         <div className="relative h-48 md:h-64 w-full overflow-hidden">
-           <Image 
-              src={category.items[0].img} 
-              alt={category.name} 
-              fill 
-              priority
-              sizes="100vw"
-              className="object-cover opacity-50 blur-sm scale-110"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 container mx-auto">
-               <h2 className="text-3xl md:text-4xl font-bold text-foreground">{category.name}</h2>
-               <p className="text-muted-foreground">{category.items.length} opções deliciosas</p>
-            </div>
+          <Image
+            src={category.items[0].img}
+            alt={category.name}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover opacity-50 blur-sm scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6 container mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">{category.name}</h2>
+            <p className="text-muted-foreground">{category.items.length} opções deliciosas</p>
+          </div>
         </div>
       )}
 
@@ -70,16 +70,16 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
             >
-              <Card 
+              <Card
                 className="overflow-hidden h-full hover:shadow-fire transition-all duration-300 border-red-950/30 group flex flex-col cursor-pointer"
                 onClick={() => setConfiguringProduct(item as Product)}
               >
                 <div className="relative aspect-square overflow-hidden bg-muted">
                   {item.img ? (
-                    <Image 
-                      src={item.img} 
-                      alt={item.name} 
-                      fill 
+                    <Image
+                      src={item.img}
+                      alt={item.name}
+                      fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -95,7 +95,18 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
                       {item.name}
                     </h3>
                     <span className="font-bold text-green-500 whitespace-nowrap">
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                      {item.promotional_price ? (
+                        <div className="flex flex-col items-end">
+                          <span className="text-xs text-neutral-400 line-through">
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                          </span>
+                          <span>
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.promotional_price)}
+                          </span>
+                        </div>
+                      ) : (
+                        new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)
+                      )}
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-3 mb-4 flex-1">
@@ -114,8 +125,8 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
       {/* Product Customizer Modal */}
       <AnimatePresence>
         {configuringProduct && (
-          <ProductCustomizer 
-            product={configuringProduct} 
+          <ProductCustomizer
+            product={configuringProduct}
             onClose={() => setConfiguringProduct(null)}
             onConfirm={(item) => {
               addToCart(item)

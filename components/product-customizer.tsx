@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { X, Check } from "lucide-react"
@@ -17,6 +17,7 @@ export type Option = {
   price: number
   max?: number
   description?: string | null
+  img?: string | null
 }
 
 export type Choice = {
@@ -32,6 +33,8 @@ export type Product = {
   name: string
   description?: string | null
   price: number
+  promotional_price?: number | null
+  promotional_percentage?: number | null
   img?: string | null
   choices?: Choice[]
 }
@@ -57,6 +60,22 @@ export function ProductCustomizer({
   const [quantity, setQuantity] = useState(1)
   const [selectedOptions, setSelectedOptions] = useState<{ [choiceId: number]: Option[] }>({})
   const [notes, setNotes] = useState("")
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    // Save original styles
+    const originalStyle = window.getComputedStyle(document.body).overflow
+    const originalHtmlStyle = window.getComputedStyle(document.documentElement).overflow
+
+    // Prevent scrolling
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = originalStyle
+      document.documentElement.style.overflow = originalHtmlStyle
+    }
+  }, [])
 
   const toggleOption = (choice: Choice, option: Option) => {
     setSelectedOptions(prev => {
@@ -100,50 +119,71 @@ export function ProductCustomizer({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 backdrop-blur-sm p-4"
+      onClick={onClose} // Close on backdrop click
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-background w-full max-w-2xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        className="relative w-full max-w-2xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-black/5 dark:border-white/10"
+        onClick={e => e.stopPropagation()} // Prevent close on modal click
       >
         {/* Header */}
-        <div className="p-6 flex gap-6 relative">
-           {product.img && (
-            <div className="relative h-24 w-24 rounded-lg overflow-hidden flex-shrink-0 shadow-md">
+        <div className="p-6 flex gap-6 relative border-b border-black/5 dark:border-white/5">
+          {product.img && (
+            <div className="relative h-24 w-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-lg border border-black/5 dark:border-white/10">
               <Image src={product.img} alt={product.name} fill className="object-cover" />
             </div>
           )}
           <div className="flex-1 pr-8">
-            <h2 className="text-2xl font-bold">{product.name}</h2>
-            <p className="text-muted-foreground text-sm mt-1">{product.description}</p>
-            <div className="mt-2 text-xl font-semibold text-green-500">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
+            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">{product.name}</h2>
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm mt-1 leading-relaxed">{product.description}</p>
+            <div className="mt-2 text-xl font-bold text-green-600 dark:text-green-400">
+              {product.promotional_price ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-neutral-400 line-through text-base">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
+                  </span>
+                  <span className="text-green-400 font-bold text-xl">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.promotional_price)}
+                  </span>
+                </div>
+              ) : (
+                new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)
+              )}
             </div>
           </div>
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-muted rounded-full">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+        <div className="flex-1 overflow-y-auto p-6 space-y-8 scrollbar-hide overscroll-contain">
           {product.choices?.map(choice => {
             const currentSelected = selectedOptions[choice.id] || []
             const isSatisfied = choice.min > 0 ? currentSelected.length >= choice.min : true
-            
+
             return (
-              <div key={choice.id} className="space-y-3">
+              <div key={choice.id} className="space-y-4">
                 <div className="flex justify-between items-baseline">
-                  <h3 className={cn("font-semibold text-lg", !isSatisfied && "text-red-500")}>
+                  <h3 className={cn("font-bold text-lg tracking-tight", !isSatisfied ? "text-red-500 dark:text-red-400" : "text-neutral-900 dark:text-white")}>
                     {choice.name} {!isSatisfied && "*"}
                   </h3>
-                  <span className={cn("text-xs px-2 py-1 rounded", !isSatisfied ? "bg-red-100 text-red-600 dark:bg-red-900/30" : "text-muted-foreground bg-muted")}>
+                  <span className={cn(
+                    "text-xs px-2.5 py-1 rounded-full font-medium border",
+                    !isSatisfied
+                      ? "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20"
+                      : "text-neutral-500 dark:text-neutral-400 bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5"
+                  )}>
                     {choice.min > 0 ? `Obrigatório (Min ${choice.min})` : "Opcional"} • Max {choice.max}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-3">
                   {choice.options.map(option => {
                     const isSelected = currentSelected.find(o => o.id === option.id)
                     return (
@@ -151,26 +191,44 @@ export function ProductCustomizer({
                         key={option.id}
                         onClick={() => toggleOption(choice, option)}
                         className={cn(
-                          "flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all",
-                          isSelected 
-                            ? "border-red-600 bg-red-500/5 shadow-sm" 
-                            : "hover:bg-muted/50"
+                          "flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all duration-200 border",
+                          isSelected
+                            ? "border-red-500/50 bg-red-500/10 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+                            : "border-black/5 dark:border-white/5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/10 dark:hover:border-white/10"
                         )}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4 flex-1">
+                          {/* Checkbox/Radio Indicator */}
                           <div className={cn(
-                            "h-5 w-5 rounded border flex items-center justify-center transition-colors",
-                            isSelected ? "bg-red-600 border-red-600 text-white" : "border-muted-foreground"
+                            "h-5 w-5 rounded-full border flex items-center justify-center transition-all duration-200 flex-shrink-0",
+                            isSelected
+                              ? "bg-red-600 border-red-600 text-white scale-110"
+                              : "border-neutral-400 dark:border-neutral-600"
                           )}>
                             {isSelected && <Check className="h-3 w-3" />}
                           </div>
-                          <div className="flex flex-col">
-                            <span className="font-medium text-sm">{option.name}</span>
-                            {option.description && <span className="text-xs text-muted-foreground">{option.description}</span>}
+
+                          {/* Option Image */}
+                          {option.img && (
+                            <div className="relative h-12 w-12 rounded-lg overflow-hidden bg-white/50 dark:bg-white/5 flex-shrink-0 border border-black/5 dark:border-white/5">
+                              <Image src={option.img} alt={option.name} fill className="object-cover" />
+                            </div>
+                          )}
+
+                          {/* Option Details */}
+                          <div className="flex flex-col flex-1">
+                            <span className={cn("font-medium text-sm", isSelected ? "text-neutral-900 dark:text-white" : "text-neutral-700 dark:text-neutral-200")}>
+                              {option.name}
+                            </span>
+                            {option.description && (
+                              <span className="text-xs text-neutral-500 mt-0.5">{option.description}</span>
+                            )}
                           </div>
                         </div>
+
+                        {/* Price */}
                         {option.price > 0 && (
-                          <span className="text-sm font-medium text-green-500">
+                          <span className="text-sm font-bold text-green-600 dark:text-green-400 ml-4">
                             +{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price)}
                           </span>
                         )}
@@ -182,28 +240,44 @@ export function ProductCustomizer({
             )
           })}
 
-          <div className="space-y-2">
-            <Label>Observações</Label>
-            <Input 
-              placeholder="Ex: Sem cebola, ponto da carne..." 
+          <div className="space-y-3">
+            <Label className="text-neutral-900 dark:text-white font-bold text-lg">Observações</Label>
+            <Input
+              placeholder="Ex: Sem cebola, ponto da carne..."
               value={notes}
               onChange={e => setNotes(e.target.value)}
+              className="bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-900 dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-600 focus:border-red-500/50 focus:ring-red-500/20 h-12 rounded-xl"
             />
           </div>
         </div>
 
         {/* Footer */}
-        <div className="p-6 bg-muted/20 flex flex-col sm:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-4 bg-background rounded-lg p-1">
-            <Button variant="ghost" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-            <span className="w-8 text-center font-bold">{quantity}</span>
-            <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)}>+</Button>
+        <div className="p-6 bg-neutral-100/50 dark:bg-black/20 border-t border-black/5 dark:border-white/5 flex flex-col sm:flex-row gap-4 items-center justify-between backdrop-blur-md">
+          <div className="flex items-center gap-4 bg-black/5 dark:bg-white/5 rounded-xl p-1 w-full sm:w-auto justify-between sm:justify-start border border-black/5 dark:border-white/5">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="text-neutral-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 hover:text-neutral-900 dark:hover:text-white h-10 w-10 rounded-lg"
+            >
+              -
+            </Button>
+            <span className="w-8 text-center font-bold text-neutral-900 dark:text-white text-lg">{quantity}</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setQuantity(quantity + 1)}
+              className="text-neutral-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 hover:text-neutral-900 dark:hover:text-white h-10 w-10 rounded-lg"
+            >
+              +
+            </Button>
           </div>
-          
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="flex-1 border-red-600 text-red-600 hover:bg-red-50"
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:flex-1">
+            <Button
+              size="lg"
+              variant="outline"
+              className="w-full sm:flex-1 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-300 hover:border-red-500/50 bg-transparent h-12 rounded-xl text-base font-bold uppercase tracking-wide"
               onClick={() => onConfirm({
                 product,
                 quantity,
@@ -215,10 +289,9 @@ export function ProductCustomizer({
             >
               Comprar Agora
             </Button>
-            <Button 
-              size="lg" 
-              variant="fire" 
-              className="flex-1 shadow-fire"
+            <Button
+              size="lg"
+              className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] transition-all h-12 rounded-xl text-base font-bold uppercase tracking-wide border-0"
               onClick={() => onConfirm({
                 product,
                 quantity,
@@ -234,6 +307,7 @@ export function ProductCustomizer({
                 "Selecione obrigatórios"
               )}
             </Button>
+          </div>
         </div>
       </motion.div>
     </motion.div>

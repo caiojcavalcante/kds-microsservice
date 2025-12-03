@@ -12,33 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-
-// --- Types ---
-
-type Option = {
-  id: number
-  name: string
-  price: number
-  max?: number
-  description?: string | null
-}
-
-type Choice = {
-  id: number
-  name: string
-  min: number
-  max: number
-  options: Option[]
-}
-
-type Product = {
-  id: number
-  name: string
-  description?: string
-  price: number
-  img?: string | null
-  choices?: Choice[]
-}
+import { ProductCustomizer, Product, CartItem, Option, Choice } from "@/components/product-customizer"
 
 type Category = {
   id: number
@@ -46,25 +20,16 @@ type Category = {
   items: Product[]
 }
 
-type CartItem = {
-  uniqueId: string // internal ID for React keys
-  product: Product
-  quantity: number
-  selectedOptions: { [choiceId: number]: Option[] }
-  notes: string
-  totalPrice: number
-}
-
 type ServiceType = "MESA" | "BALCAO" | "DELIVERY"
 
 // --- Components ---
 
-function ProductSearch({ 
-  menu, 
-  onSelect 
-}: { 
-  menu: Category[], 
-  onSelect: (product: Product) => void 
+function ProductSearch({
+  menu,
+  onSelect
+}: {
+  menu: Category[],
+  onSelect: (product: Product) => void
 }) {
   const [query, setQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
@@ -73,7 +38,7 @@ function ProductSearch({
     if (!query) return []
     const lowerQuery = query.toLowerCase()
     const results: Product[] = []
-    
+
     menu.forEach(category => {
       category.items.forEach(item => {
         if (item.name.toLowerCase().includes(lowerQuery)) {
@@ -99,7 +64,7 @@ function ProductSearch({
           onFocus={() => setIsOpen(true)}
         />
         {query && (
-          <button 
+          <button
             onClick={() => { setQuery(""); setIsOpen(false) }}
             className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
           >
@@ -128,10 +93,10 @@ function ProductSearch({
               >
                 {product.img ? (
                   <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0 bg-muted">
-                    <Image 
-                      src={product.img} 
-                      alt={product.name} 
-                      fill 
+                    <Image
+                      src={product.img}
+                      alt={product.name}
+                      fill
                       className="object-cover"
                     />
                   </div>
@@ -158,187 +123,7 @@ function ProductSearch({
   )
 }
 
-function ProductCustomizer({
-  product,
-  onClose,
-  onConfirm
-}: {
-  product: Product
-  onClose: () => void
-  onConfirm: (cartItem: Omit<CartItem, "uniqueId">) => void
-}) {
-  const [quantity, setQuantity] = useState(1)
-  const [selectedOptions, setSelectedOptions] = useState<{ [choiceId: number]: Option[] }>({})
-  const [notes, setNotes] = useState("")
 
-  // Initialize required options if needed (optional logic, skipping for simplicity/user freedom)
-
-  const toggleOption = (choice: Choice, option: Option) => {
-    setSelectedOptions(prev => {
-      const current = prev[choice.id] || []
-      const isSelected = current.find(o => o.id === option.id)
-
-      if (isSelected) {
-        return { ...prev, [choice.id]: current.filter(o => o.id !== option.id) }
-      } else {
-        // Check max
-        if (choice.max === 1) {
-          return { ...prev, [choice.id]: [option] }
-        }
-        if (current.length >= choice.max) return prev
-        return { ...prev, [choice.id]: [...current, option] }
-      }
-    })
-  }
-
-  const calculateTotal = () => {
-    let total = product.price
-    Object.values(selectedOptions).flat().forEach(opt => {
-      total += opt.price
-    })
-    return total * quantity
-  }
-
-  const isValid = () => {
-    if (!product.choices) return true
-    return product.choices.every(choice => {
-      if (choice.min > 0) {
-        const selected = selectedOptions[choice.id] || []
-        return selected.length >= choice.min
-      }
-      return true
-    })
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-    >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-background w-full max-w-2xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col overflow-hidden"
-      >
-        {/* Header */}
-        <div className="p-6 flex gap-6 relative">
-           {product.img && (
-            <div className="relative h-24 w-24 rounded-lg overflow-hidden flex-shrink-0 shadow-md">
-              <Image src={product.img} alt={product.name} fill className="object-cover" />
-            </div>
-          )}
-          <div className="flex-1 pr-8">
-            <h2 className="text-2xl font-bold">{product.name}</h2>
-            <p className="text-muted-foreground text-sm mt-1">{product.description}</p>
-            <div className="mt-2 text-xl font-semibold text-green-500">
-              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
-            </div>
-          </div>
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 hover:bg-muted rounded-full">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          {product.choices?.map(choice => {
-            const currentSelected = selectedOptions[choice.id] || []
-            const isSatisfied = choice.min > 0 ? currentSelected.length >= choice.min : true
-            
-            return (
-              <div key={choice.id} className="space-y-3">
-                <div className="flex justify-between items-baseline">
-                  <h3 className={cn("font-semibold text-lg", !isSatisfied && "text-red-500")}>
-                    {choice.name} {!isSatisfied && "*"}
-                  </h3>
-                  <span className={cn("text-xs px-2 py-1 rounded", !isSatisfied ? "bg-red-100 text-red-600 dark:bg-red-900/30" : "text-muted-foreground bg-muted")}>
-                    {choice.min > 0 ? `Obrigatório (Min ${choice.min})` : "Opcional"} • Max {choice.max}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {choice.options.map(option => {
-                    const isSelected = currentSelected.find(o => o.id === option.id)
-                    return (
-                      <div
-                        key={option.id}
-                        onClick={() => toggleOption(choice, option)}
-                        className={cn(
-                          "flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all",
-                          isSelected 
-                            ? "border-red-600 bg-red-500/5 shadow-sm" 
-                            : "hover:bg-muted/50"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={cn(
-                            "h-5 w-5 rounded border flex items-center justify-center transition-colors",
-                            isSelected ? "bg-red-600 border-red-600 text-white" : "border-muted-foreground"
-                          )}>
-                            {isSelected && <Check className="h-3 w-3" />}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="font-medium text-sm">{option.name}</span>
-                            {option.description && <span className="text-xs text-muted-foreground">{option.description}</span>}
-                          </div>
-                        </div>
-                        {option.price > 0 && (
-                          <span className="text-sm font-medium text-green-500">
-                            +{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(option.price)}
-                          </span>
-                        )}
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            )
-          })}
-
-          <div className="space-y-2">
-            <Label>Observações</Label>
-            <Input 
-              placeholder="Ex: Sem cebola, ponto da carne..." 
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-6 bg-muted/20 flex flex-col sm:flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-4 bg-background rounded-lg p-1">
-            <Button variant="ghost" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</Button>
-            <span className="w-8 text-center font-bold">{quantity}</span>
-            <Button variant="ghost" size="icon" onClick={() => setQuantity(quantity + 1)}>+</Button>
-          </div>
-          
-          <Button 
-            size="lg" 
-            variant="fire" 
-            className="w-full sm:w-auto shadow-fire min-w-[200px]"
-            onClick={() => onConfirm({
-              product,
-              quantity,
-              selectedOptions,
-              notes,
-              totalPrice: calculateTotal()
-            })}
-            disabled={!isValid()}
-          >
-            {isValid() ? (
-              <>Adicionar • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateTotal())}</>
-            ) : (
-              "Selecione os itens obrigatórios"
-            )}
-          </Button>
-        </div>
-      </motion.div>
-    </motion.div>
-  )
-}
 
 // --- Main Page ---
 
@@ -347,7 +132,7 @@ export default function PdvPage() {
   const [tableNumber, setTableNumber] = useState("")
   const [customerName, setCustomerName] = useState("")
   const [customerPhone, setCustomerPhone] = useState("")
-  
+
   const [cart, setCart] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(false)
   const [lastCode, setLastCode] = useState<string | null>(null)
@@ -491,9 +276,9 @@ export default function PdvPage() {
                       <Label className={cn(tableNumber.trim() === "" && "text-red-500")}>Mesa *</Label>
                       <div className="relative">
                         <Hash className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="Nº" 
-                          className="pl-8" 
+                        <Input
+                          placeholder="Nº"
+                          className="pl-8"
                           value={tableNumber}
                           onChange={e => setTableNumber(e.target.value)}
                         />
@@ -506,8 +291,8 @@ export default function PdvPage() {
                     </Label>
                     <div className="relative">
                       <User className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                        placeholder="Nome" 
+                      <Input
+                        placeholder="Nome"
                         className="pl-8"
                         value={customerName}
                         onChange={e => setCustomerName(e.target.value)}
@@ -519,8 +304,8 @@ export default function PdvPage() {
                       <Label className={cn(customerPhone.trim() === "" && "text-red-500")}>Telefone *</Label>
                       <div className="relative">
                         <Phone className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          placeholder="(xx) xxxxx-xxxx" 
+                        <Input
+                          placeholder="(xx) xxxxx-xxxx"
                           className="pl-8"
                           value={customerPhone}
                           onChange={e => setCustomerPhone(e.target.value)}
@@ -548,7 +333,7 @@ export default function PdvPage() {
                   <Badge variant="secondary">{cart.length} itens</Badge>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="flex-1 overflow-y-auto p-0">
                 {cart.length === 0 ? (
                   <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-8 text-center">
@@ -571,7 +356,7 @@ export default function PdvPage() {
                             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.totalPrice)}
                           </div>
                         </div>
-                        
+
                         {/* Options */}
                         <div className="text-sm text-muted-foreground pl-6 space-y-1">
                           {Object.values(item.selectedOptions).flat().map((opt, i) => (
@@ -588,9 +373,9 @@ export default function PdvPage() {
                         </div>
 
                         <div className="flex justify-end mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                             onClick={() => removeFromCart(item.uniqueId)}
                           >
@@ -610,9 +395,9 @@ export default function PdvPage() {
                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cartTotal)}
                   </span>
                 </div>
-                
-                <Button 
-                  className="w-full shadow-fire h-12 text-lg" 
+
+                <Button
+                  className="w-full shadow-fire h-12 text-lg"
                   variant="fire"
                   onClick={submitOrder}
                   disabled={loading || cart.length === 0 || !isClientDataValid()}
@@ -640,8 +425,8 @@ export default function PdvPage() {
       {/* Product Customizer Modal */}
       <AnimatePresence>
         {configuringProduct && (
-          <ProductCustomizer 
-            product={configuringProduct} 
+          <ProductCustomizer
+            product={configuringProduct}
             onClose={() => setConfiguringProduct(null)}
             onConfirm={addToCart}
           />

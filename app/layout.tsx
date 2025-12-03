@@ -25,6 +25,7 @@ import { createClient } from "@/utils/supabase/server";
 // ...
 
 import { CartProvider } from "@/contexts/cart-context";
+import { ThemeProvider } from "@/components/theme-provider";
 
 // ...
 
@@ -43,7 +44,7 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="pt-BR" className="dark">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -51,12 +52,19 @@ export default async function RootLayout({
           geistMono.variable
         )}
       >
-        <CartProvider>
-          <SmoothScrolling>
-            <MainNav user={user} profile={profile} />
-            {children}
-          </SmoothScrolling>
-        </CartProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <CartProvider>
+            <SmoothScrolling>
+              <MainNav user={user} profile={profile} />
+              {children}
+            </SmoothScrolling>
+          </CartProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

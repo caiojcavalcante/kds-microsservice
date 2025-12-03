@@ -91,6 +91,7 @@ export default async function AdminPage() {
         )}
 
         <AdminClient initialOrders={safeOrders} menu={menu} />
+
       </div>
     </main>
   )

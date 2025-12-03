@@ -55,7 +55,7 @@ export default async function AccountPage() {
             <div className="space-y-4">
               <h3 className="font-medium">Ações</h3>
               <form action={logout}>
-                <Button variant="destructive" className="w-full sm:w-auto">
+                <Button variant="destructive" className="w-full sm:w-auto text-destructive-foreground text-red-500 border hover:border-red-500 hover:text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
                   Sair da Conta
                 </Button>

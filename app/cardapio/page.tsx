@@ -8,6 +8,7 @@ import { ArrowRight, Star, Search, UtensilsCrossed, ChevronDown, ChevronUp, Arro
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { CategoriesGrid } from "@/components/categories-grid"
 import { Input } from "@/components/ui/input"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -127,17 +128,42 @@ export default function CardapioPage() {
   const displayedCategories = showAllCategories ? sortedCategories : sortedCategories.slice(0, 4)
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen  bg-background/80 pb-20">
       {/* Header with Logo and Search */}
-      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto px-4 h-20 flex items-center sm:justify-center justify-between gap-4">
+      <header className="sticky top-0 sm:top-[56px] z-40 backdrop-blur-md border-b border-border">
+        <div className="container mx-auto px-4 h-20 flex items-center sm:justify-center justify-between gap-4 bg-white dark:bg-black">
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <div className="sm:hidden relative h-10 w-20">
               <Image
-                src="/logo.png"
+                src="/logo-light.png" // Default light mode logo
                 alt="Ferro e Fogo"
                 fill
-                className="object-cover" // Removed blend-screen as JPEG does not support transparency and blend-screen is not the correct approach for removing a solid background from a JPEG.
+                className="object-cover light-mode-logo"
+                priority
+              />
+              <Image
+                src="/logo-dark.jpeg" // Dark mode logo
+                alt="Ferro e Fogo"
+                fill
+                className="object-cover dark-mode-logo"
+                priority
+              />
+            </div>
+          </Link>
+          <Link href="/" className="hidden sm:flex items-center gap-2 flex-shrink-0">
+            <div className="relative h-10 w-28 block sm:hidden">
+              <Image
+                src="/logo-light.png" // Default light mode logo
+                alt="Ferro e Fogo"
+                fill
+                className="object-contain light-mode-logo"
+                priority
+              />
+              <Image
+                src="/logo-dark.jpeg" // Dark mode logo
+                alt="Ferro e Fogo"
+                fill
+                className="object-contain dark-mode-logo"
                 priority
               />
             </div>
@@ -155,11 +181,12 @@ export default function CardapioPage() {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6 space-y-10">
+      <div className="container mx-auto px-4 py-6 space-y-6">
 
         {/* Banner Carousel */}
         {!searchQuery && (
-          <section>
+          <section className="space-y-6 relative">
+            <div className="absolute top-[-20px] left-1/2 -translate-x-1/2 h-[220px] w-screen bg-gradient-to-tr from-red-500 to-red-800"></div>
             <Carousel className="w-full max-w-5xl mx-auto rounded-2xl overflow-hidden shadow-2xl">
               <CarouselContent>
                 {BANNERS.map((banner, index) => (
@@ -231,7 +258,18 @@ export default function CardapioPage() {
                       </p>
                       <div className="pt-2 flex items-center justify-between">
                         <span className="text-xl font-bold text-green-500">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                          {item.promotional_price ? (
+                            <div className="flex flex-col items-end">
+                              <span className="text-xs text-neutral-400 line-through">
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                              </span>
+                              <span>
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.promotional_price)}
+                              </span>
+                            </div>
+                          ) : (
+                            new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)
+                          )}
                         </span>
                         <Button size="sm" variant="outline" className="group-hover:bg-red-500 group-hover:text-white transition-colors">
                           Pedir
@@ -250,75 +288,9 @@ export default function CardapioPage() {
         )}
 
         {/* Categories Section */}
+        {/* Categories Section */}
         {!searchQuery && (
-          <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold flex items-center gap-2">
-                <UtensilsCrossed className="h-5 w-5" />
-                Categorias
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {displayedCategories.map((category, idx) => {
-                const categoryImage = category.items.find((i: any) => i.img)?.img || null
-                return (
-                  <Link
-                    href={`/cardapio/${slugify(category.name)}`}
-                    key={category.id}
-                    className="block group"
-                  >
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 }}
-                      className="relative aspect-square rounded-xl overflow-hidden shadow-md border border-muted"
-                    >
-                      {categoryImage ? (
-                        <Image
-                          src={categoryImage}
-                          alt={category.name}
-                          fill
-                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                          className="object-cover transition-transform duration-500 group-hover:scale-110 brightness-75 group-hover:brightness-100"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-muted flex items-center justify-center">
-                          <span className="text-muted-foreground">Sem Imagem</span>
-                        </div>
-                      )}
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
-                        <h3 className="text-white font-bold text-xl md:text-2xl group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
-                          {category.name}
-                          <ArrowRight className="h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </h3>
-                        <p className="text-white/70 text-sm">
-                          {category.items.length} itens
-                        </p>
-                      </div>
-                    </motion.div>
-                  </Link>
-                )
-              })}
-            </div>
-
-            {menuData.length > 4 && (
-              <div className="flex justify-center pt-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowAllCategories(!showAllCategories)}
-                  className="gap-2"
-                >
-                  {showAllCategories ? (
-                    <>Ver menos <ChevronUp className="h-4 w-4" /></>
-                  ) : (
-                    <>Ver mais categorias <ChevronDown className="h-4 w-4" /></>
-                  )}
-                </Button>
-              </div>
-            )}
-          </section>
+          <CategoriesGrid />
         )}
 
         {/* All Items Section (Infinite Scroll) */}
@@ -386,7 +358,18 @@ export default function CardapioPage() {
                       </p>
                       <div className="pt-2 flex items-center justify-between">
                         <span className="text-xl font-bold text-green-500">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                          {item.promotional_price ? (
+                            <div className="flex flex-col items-end">
+                              <span className="text-xs text-neutral-400 line-through">
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
+                              </span>
+                              <span>
+                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.promotional_price)}
+                              </span>
+                            </div>
+                          ) : (
+                            new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)
+                          )}
                         </span>
                         <Button size="sm" variant="outline" className="group-hover:bg-red-500 group-hover:text-white transition-colors">
                           Pedir

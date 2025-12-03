@@ -10,6 +10,7 @@ import { type User as SupabaseUser } from "@supabase/supabase-js"
 
 import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
+import { ModeToggle } from "@/components/mode-toggle"
 
 export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile?: any }) {
   const pathname = usePathname()
@@ -55,16 +56,23 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
   return (
     <>
       {/* Desktop Nav */}
-      <header className="hidden md:block sticky top-0 z-50 w-full border-b border-red-600/20 bg-black backdrop-blur supports-[backdrop-filter]:bg-black">
+      <header className="hidden md:block sticky top-0 z-50 w-full border-b border-red-600/20 bg-white/50 dark:bg-black/50 backdrop-blur supports-[backdrop-filter]:bg-white/50 dark:supports-[backdrop-filter]:bg-black/50">
         <div className="container flex h-14 items-center justify-between mx-auto my-2">
           <div className="flex items-center">
             <Link href="/" className="mr-6 flex items-center space-x-2">
               <div className="relative h-12 w-24">
-                <Image 
-                  src="/logo.jpeg" 
-                  alt="Ferro e Fogo" 
+                <Image
+                  src="/logo-light.png"
+                  alt="Ferro e Fogo"
                   fill
-                  className="object-contain"
+                  className="object-contain dark:hidden"
+                  priority
+                />
+                <Image
+                  src="/logo-dark.jpeg"
+                  alt="Ferro e Fogo"
+                  fill
+                  className="object-contain hidden dark:block"
                   priority
                 />
               </div>
@@ -98,7 +106,7 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
               ))}
             </nav>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <Link href="/carrinho" className="relative group">
               <div className={cn(
@@ -126,12 +134,13 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
                 Entrar
               </Link>
             )}
+            <ModeToggle />
           </div>
         </div>
       </header>
 
       {/* Mobile Nav (Floating Bottom) */}
-      <div className="md:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-50">
+      <div className="md:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4">
         <nav className="flex items-center gap-1 rounded-full border bg-background/80 backdrop-blur-md p-2 shadow-lg shadow-black/20">
           {visibleLinks.map((link) => {
             const isActive = pathname === link.href
@@ -141,8 +150,8 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
                 href={link.href}
                 className={cn(
                   "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-                  isActive 
-                    ? "bg-red-600 text-white shadow-fire" 
+                  isActive
+                    ? "bg-red-600 text-white shadow-fire"
                     : "text-muted-foreground hover:bg-muted"
                 )}
               >
@@ -158,15 +167,13 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
               </Link>
             )
           })}
-          
-          <div className="w-px h-6 bg-border mx-1" />
 
           <Link
             href="/carrinho"
             className={cn(
               "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
               pathname === "/carrinho"
-                ? "bg-red-600 text-white shadow-fire" 
+                ? "bg-red-600 text-white shadow-fire"
                 : "text-muted-foreground hover:bg-muted"
             )}
           >
@@ -177,18 +184,18 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
               </span>
             )}
           </Link>
-          
+
           <Link
             href={user ? "/account" : "/login"}
             className={cn(
               "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-              pathname === "/account"
-                ? "bg-red-600 text-white shadow-fire" 
+              (pathname === "/account" || pathname === "/login")
+                ? "bg-red-600 text-white shadow-fire"
                 : "text-muted-foreground hover:bg-muted"
             )}
           >
             <User className="h-5 w-5" />
-            {pathname === "/account" && (
+            {(pathname === "/account" || pathname === "/login") && (
               <motion.div
                 layoutId="mobile-nav-indicator"
                 className="absolute inset-0 rounded-full bg-red-600 -z-10"
@@ -196,6 +203,10 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
               />
             )}
           </Link>
+
+          <div className="flex items-center justify-center w-10 h-10">
+            <ModeToggle />
+          </div>
         </nav>
       </div>
     </>
