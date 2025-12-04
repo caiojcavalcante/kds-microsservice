@@ -75,6 +75,40 @@ export async function POST(req: NextRequest) {
     const code = "FF" + phoneSuffix + Date.now().toString().slice(-3);
     const status = "PENDENTE";
 
+    // --- DUPLICATE CHECK START ---
+    // Busca pedidos pendentes com base no identificador disponível
+    let duplicateQuery = supabase
+      .from("orders")
+      .select("*")
+      .eq("status", "PENDENTE");
+
+    // Prioriza table_number, senão usa customer_phone
+    if (table_number) {
+      duplicateQuery = duplicateQuery.eq("table_number", table_number);
+    } else if (customer_phone) {
+      duplicateQuery = duplicateQuery.eq("customer_phone", customer_phone);
+    }
+    // Se nem table_number nem customer_phone existem, não faz a query (evita match muito amplo)
+
+    if (table_number || customer_phone) {
+      const { data: existingOrders } = await duplicateQuery;
+
+      if (existingOrders && existingOrders.length > 0) {
+        for (const order of existingOrders) {
+          // Check if items match
+          if (areItemsEqual(order.items, normalizedItems)) {
+            console.log(`Pedido duplicado detectado: ${order.id}`);
+            return NextResponse.json(
+              { id: order.id, code: order.code, status: order.status, items: order.items, message: "Pedido duplicado retornado" },
+              { status: 200 } // Retorna 200 OK com o pedido existente
+            );
+          }
+        }
+      }
+    }
+    // --- DUPLICATE CHECK END ---
+
+
     const orderPayload = {
       code,
       table_number: table_number || null,
@@ -154,4 +188,36 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json(data ?? []);
+}
+
+// Helper para comparar arrays de items
+function areItemsEqual(itemsA: any[], itemsB: any[]): boolean {
+  if (!itemsA || !itemsB) return false;
+  if (itemsA.length !== itemsB.length) return false;
+
+  // Sort by product_name to ensure order doesn't matter
+  const sortFn = (a: any, b: any) => {
+    const nameA = (a.product_name || "").toString().toLowerCase();
+    const nameB = (b.product_name || "").toString().toLowerCase();
+    return nameA.localeCompare(nameB);
+  };
+
+  const sortedA = [...itemsA].sort(sortFn);
+  const sortedB = [...itemsB].sort(sortFn);
+
+  for (let i = 0; i < sortedA.length; i++) {
+    const itemA = sortedA[i];
+    const itemB = sortedB[i];
+
+    // Compare key fields
+    if (itemA.product_name !== itemB.product_name) return false;
+    if (Number(itemA.quantity) !== Number(itemB.quantity)) return false;
+
+    // Normalize notes (null vs empty string)
+    const notesA = (itemA.notes || "").trim();
+    const notesB = (itemB.notes || "").trim();
+    if (notesA !== notesB) return false;
+  }
+
+  return true;
 }
