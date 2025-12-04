@@ -27,7 +27,18 @@ export async function POST(req: NextRequest) {
       source,
     } = body;
 
-    if (!items || !Array.isArray(items) || items.length === 0) {
+    // Se items vier como string (comum em n8n/webhooks), tenta fazer o parse
+    let parsedItems = items;
+    if (typeof items === "string") {
+      try {
+        parsedItems = JSON.parse(items);
+      } catch (e) {
+        console.error("Erro ao fazer parse de items string:", e);
+        parsedItems = []; // Falha na validação abaixo
+      }
+    }
+
+    if (!parsedItems || !Array.isArray(parsedItems) || parsedItems.length === 0) {
       return NextResponse.json(
         { error: "Items obrigatórios" },
         { status: 400 }
@@ -35,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Normaliza / valida items para garantir product_name
-    const normalizedItems = (items as ItemInput[]).map(
+    const normalizedItems = (parsedItems as ItemInput[]).map(
       (item: ItemInput, index: number) => {
         const product_name =
           item.product_name?.toString().trim() ||
