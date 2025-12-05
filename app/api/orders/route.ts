@@ -25,6 +25,7 @@ export async function POST(req: NextRequest) {
       service_type,
       items,
       source,
+      billingType,
     } = body;
 
     // Se items vier como string (comum em n8n/webhooks), tenta fazer o parse
@@ -118,6 +119,7 @@ export async function POST(req: NextRequest) {
       status,
       source: source || "PDV",
       items: normalizedItems,
+      billingType: billingType || null,
       updated_at: new Date().toISOString(),
     };
 
