@@ -10,14 +10,23 @@ export async function PUT(
   const body = await request.json()
 
   // Extract fields to update
-  const { 
-    customer_name, 
-    customer_phone, 
-    table_number, 
-    status, 
+  const {
+    customer_name,
+    customer_phone,
+    table_number,
+    status,
     items,
     motoboy_name,
-    motoboy_phone
+    motoboy_phone,
+    service_type,
+    obs,
+    payment,
+    payment_status,
+    billingType,
+    total,
+    delivered_by_id,
+    delivered_by_name,
+    delivered_at
   } = body
 
   const updateData: any = {}
@@ -28,6 +37,15 @@ export async function PUT(
   if (items !== undefined) updateData.items = items
   if (motoboy_name !== undefined) updateData.motoboy_name = motoboy_name
   if (motoboy_phone !== undefined) updateData.motoboy_phone = motoboy_phone
+  if (service_type !== undefined) updateData.service_type = service_type
+  if (obs !== undefined) updateData.obs = obs
+  if (payment !== undefined) updateData.payment = payment
+  if (payment_status !== undefined) updateData.payment_status = payment_status
+  if (billingType !== undefined) updateData.billingType = billingType
+  if (total !== undefined) updateData.total = total
+  if (delivered_by_id !== undefined) updateData.delivered_by_id = delivered_by_id
+  if (delivered_by_name !== undefined) updateData.delivered_by_name = delivered_by_name
+  if (delivered_at !== undefined) updateData.delivered_at = delivered_at
 
   updateData.updated_at = new Date().toISOString()
 

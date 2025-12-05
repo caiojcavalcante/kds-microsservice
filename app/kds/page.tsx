@@ -16,5 +16,12 @@ export default async function KdsPage() {
     redirect("/login")
   }
 
-  return <KdsClient />
+  // Extract user info for delivery signature
+  const currentUser = {
+    id: user.id,
+    email: user.email || "",
+    name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Funcionário"
+  }
+
+  return <KdsClient currentUser={currentUser} />
 }

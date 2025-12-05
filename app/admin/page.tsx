@@ -25,6 +25,19 @@ type OrderRow = {
   created_at: string
   updated_at: string
   items: OrderItem[] | null
+  // Payment fields
+  obs: string | null
+  payment: string | null
+  payment_status: string | null
+  billingType: string | null
+  total: number | null
+  encodedImage: string | null
+  copiaecola: string | null
+  invoiceUrl: string | null
+  // Delivery signature
+  delivered_by_id: string | null
+  delivered_by_name: string | null
+  delivered_at: string | null
 }
 
 export const dynamic = "force-dynamic"
@@ -39,11 +52,10 @@ export default async function AdminPage() {
 
   const supabase = createServerClient()
 
+  // Select all fields for admin access
   const { data: orders, error } = await supabase
     .from("orders")
-    .select(
-      "id, code, table_number, customer_name, customer_phone, status, source, service_type, motoboy_name, motoboy_phone, created_at, updated_at, items"
-    )
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(100)
 

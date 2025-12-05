@@ -27,10 +27,19 @@ export async function PATCH(
     );
   }
 
+  // Campos permitidos para atualização
+  const allowedExtras = ['motoboy_name', 'motoboy_phone', 'payment_status', 'delivered_by_id', 'delivered_by_name', 'delivered_at'];
+  const filteredExtra: Record<string, any> = {};
+  for (const key of allowedExtras) {
+    if (extra[key] !== undefined) {
+      filteredExtra[key] = extra[key];
+    }
+  }
+
   const updatePayload: Record<string, any> = {
     status,
     updated_at: new Date().toISOString(),
-    ...extra,
+    ...filteredExtra,
   };
 
   const { error } = await supabase

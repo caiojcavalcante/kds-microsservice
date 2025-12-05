@@ -7,11 +7,10 @@ export async function GET() {
 
   // Ajusta aqui a lógica de filtro da fila:
   // Exemplo: tudo que NÃO está finalizado/cancelado
+  // Usamos SELECT * para ser resiliente a colunas que ainda não existem
   const { data, error } = await supabase
     .from("orders")
-    .select(
-      "id, code, table_number, customer_name, customer_phone, service_type, status, items, motoboy_name, motoboy_phone, created_at"
-    )
+    .select("*")
     .not("status", "in", '("ENTREGUE","CANCELADO")')
     .order("created_at", { ascending: true });
 
