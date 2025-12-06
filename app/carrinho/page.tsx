@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useCart } from "@/contexts/cart-context"
 import { cn } from "@/lib/utils"
-import menuData from "@/app/data/menu.json"
+import { useMenu } from "@/hooks/use-menu"
 import Image from "next/image"
 
 type ServiceType = "MESA" | "DELIVERY" | "BALCAO"
@@ -84,6 +84,7 @@ function UpsellItem({ drink, addToCart }: { drink: any, addToCart: any }) {
 }
 
 export default function CartPage() {
+  const { menu } = useMenu()
   const { cart, removeFromCart, cartTotal, clearCart, addToCart, updateQuantity } = useCart()
   const [loading, setLoading] = useState(false)
   const [successCode, setSuccessCode] = useState<string | null>(null)
@@ -103,7 +104,7 @@ export default function CartPage() {
 
   // Get drinks for upsell (assuming category id 2 is drinks or searching by name)
   // For now, let's find the category named "Bebidas" or similar, or just take the last category
-  const drinksCategory = (menuData as any).find((cat: any) => cat.name.toLowerCase().includes("cervejas", "agua", "refrigerantes")) || menuData[menuData.length - 1]
+  const drinksCategory = menu.find((cat) => cat.name.toLowerCase().includes("cervejas")) || menu[menu.length - 1]
   const drinks = drinksCategory?.items.slice(0, 5) || []
 
   // Form State

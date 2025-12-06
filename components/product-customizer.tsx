@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils"
 
 // Types
 export type Option = {
-  id: number
+  id: string | number
   name: string
   price: number
   max?: number
@@ -21,7 +21,7 @@ export type Option = {
 }
 
 export type Choice = {
-  id: number
+  id: string | number
   name: string
   min: number
   max: number
@@ -29,7 +29,7 @@ export type Choice = {
 }
 
 export type Product = {
-  id: number
+  id: string | number
   name: string
   description?: string | null
   price: number
@@ -43,7 +43,7 @@ export type CartItem = {
   uniqueId: string
   product: Product
   quantity: number
-  selectedOptions: { [choiceId: number]: Option[] }
+  selectedOptions: Record<string | number, Option[]>
   notes: string
   totalPrice: number
 }
@@ -58,7 +58,7 @@ export function ProductCustomizer({
   onConfirm: (cartItem: Omit<CartItem, "uniqueId">, redirect?: boolean) => void
 }) {
   const [quantity, setQuantity] = useState(1)
-  const [selectedOptions, setSelectedOptions] = useState<{ [choiceId: number]: Option[] }>({})
+  const [selectedOptions, setSelectedOptions] = useState<Record<string | number, Option[]>>({})
   const [notes, setNotes] = useState("")
 
   // Lock body scroll when modal is open

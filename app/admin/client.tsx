@@ -277,11 +277,13 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
     <div className="space-y-8">
 
       <Tabs defaultValue="orders" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="orders">Pedidos</TabsTrigger>
-          <TabsTrigger value="products">Produtos</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
+        <div className="w-full mx-4 sm:mx-0 overflow-x-auto">
+          <TabsList className="inline-flex min-w-max">
+            <TabsTrigger value="orders">Pedidos</TabsTrigger>
+            <TabsTrigger value="products">Produtos</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="orders" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -567,7 +569,7 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={handleClosePanel}
-              className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm overflow-y-auto"
+              className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm overflow-y-auto h-screen m-0"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}

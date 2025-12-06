@@ -4,34 +4,55 @@ import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ShoppingCart, Star } from "lucide-react"
-import menuData from "@/app/data/menu.json"
+import { ShoppingCart, Star, Loader2 } from "lucide-react"
+import { useMenu, type MenuItem } from "@/hooks/use-menu"
 import { ProductCustomizer, Product } from "@/components/product-customizer"
 import { useCart } from "@/contexts/cart-context"
 
-// IDs of the burgers to display
-const PROMO_IDS = [
-    { id: 4812821, highlight: false }, // Giga Burguer
-    { id: 4812823, highlight: false },  // Supremacia
-    { id: 4812820, highlight: false }, // Toscano (replacing Classudo)
+// IDs of the burgers to display (these are legacy numeric IDs - we'll match by name instead)
+const PROMO_NAMES = [
+    { name: "GIGA BURGUER", highlight: false },
+    { name: "SUPREMACIA CARNE DO SOL", highlight: false },
+    { name: "TOSCANO", highlight: false },
 ]
 
 export function PromoBanner() {
+    const { menu, loading } = useMenu()
     const { addToCart } = useCart()
     const [configuringProduct, setConfiguringProduct] = useState<Product | null>(null)
 
-    // Find products from menuData
+    // Find products from menu
     const burgers = useMemo(() => {
-        const allItems = (menuData as any).flatMap((cat: any) => cat.items)
-        return PROMO_IDS.map(promo => {
-            const product = allItems.find((item: any) => item.id === promo.id)
+        if (!menu.length) return []
+        const allItems = menu.flatMap((cat) => cat.items)
+        return PROMO_NAMES.map(promo => {
+            const product = allItems.find((item) =>
+                item.name.toUpperCase().includes(promo.name.toUpperCase()) ||
+                promo.name.toUpperCase().includes(item.name.toUpperCase())
+            )
             if (!product) return null
             return {
                 ...product,
-                highlight: promo.highlight
+                highlight: promo.highlight,
+                promotional_percentage: product.promotional_price
+                    ? Math.round((1 - product.promotional_price / product.price) * 100)
+                    : null
             }
-        }).filter(Boolean) as (Product & { highlight: boolean })[]
-    }, [])
+        }).filter(Boolean) as (MenuItem & { highlight: boolean; promotional_percentage: number | null })[]
+    }, [menu])
+
+    if (loading) {
+        return (
+            <section className="relative w-full overflow-hidden py-12 md:py-24 bg-black">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,80,0,0.15)_0%,rgba(0,0,0,1)_80%)]" />
+                </div>
+                <div className="container relative z-10 mx-auto px-4 flex items-center justify-center py-24">
+                    <Loader2 className="h-12 w-12 animate-spin text-red-500" />
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section className="relative w-full overflow-hidden py-12 md:py-24 bg-black">
@@ -87,7 +108,7 @@ export function PromoBanner() {
                             viewport={{ once: true }}
                             transition={{ delay: index * 0.2 }}
                             className={`relative group min-w-[85vw] h-full snap-center md:min-w-0 ${burger.highlight ? "md:-mt-12 md:scale-105 z-20" : "z-10"}`}
-                            onClick={() => setConfiguringProduct(burger)}
+                            onClick={() => setConfiguringProduct(burger as any)}
                         >
                             {/* Card Container with Iron/Metal effect */}
 
@@ -174,7 +195,7 @@ export function PromoBanner() {
             <AnimatePresence>
                 {configuringProduct && (
                     <ProductCustomizer
-                        product={configuringProduct}
+                        product={configuringProduct as any}
                         onClose={() => setConfiguringProduct(null)}
                         onConfirm={(item, redirect) => {
                             addToCart(item)

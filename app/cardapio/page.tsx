@@ -12,7 +12,7 @@ import { CategoriesGrid } from "@/components/categories-grid"
 import { Input } from "@/components/ui/input"
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import menuData from "@/app/data/menu.json"
+import { useMenu } from "@/hooks/use-menu"
 import { ProductCustomizer, Product } from "@/components/product-customizer"
 import { useCart } from "@/contexts/cart-context"
 
@@ -37,6 +37,7 @@ const BANNERS = [
 ]
 
 export default function CardapioPage() {
+  const { menu, loading } = useMenu()
   const { addToCart } = useCart()
   const [configuringProduct, setConfiguringProduct] = useState<Product | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
@@ -50,23 +51,24 @@ export default function CardapioPage() {
 
   // Filter items based on search query
   const filteredItems = useMemo(() => {
-    if (!searchQuery.trim()) return []
+    if (!searchQuery.trim() || !menu.length) return []
     const query = searchQuery.toLowerCase()
-    return (menuData as any).flatMap((cat: any) => cat.items).filter((item: any) =>
+    return menu.flatMap((cat) => cat.items).filter((item) =>
       item.name.toLowerCase().includes(query) ||
       (item.description && item.description.toLowerCase().includes(query))
     )
-  }, [searchQuery])
+  }, [searchQuery, menu])
 
   // Get all items for the "All Items" section
   const allItems = useMemo(() => {
+    if (!menu.length) return []
     // Inject category name into items to allow sorting by category
-    let items = (menuData as any).flatMap((cat: any) =>
-      cat.items.map((item: any) => ({ ...item, categoryName: cat.name }))
+    let items = menu.flatMap((cat) =>
+      cat.items.map((item) => ({ ...item, categoryName: cat.name }))
     )
 
     // Sort
-    items.sort((a: any, b: any) => {
+    items.sort((a, b) => {
       if (sortBy === 'recommended') {
         const priorityOrder = [
           'Cortes de carne',
@@ -97,15 +99,16 @@ export default function CardapioPage() {
     })
 
     return items
-  }, [sortBy])
+  }, [sortBy, menu])
 
   const visibleItems = allItems.slice(0, visibleItemsCount)
 
   // Get some "offers" - for now, let's pick the first 4 items from the first category (usually burgers/main)
-  const offers = menuData[0]?.items.slice(0, 4) || []
+  const offers = menu[0]?.items.slice(0, 4) || []
 
   // Categories logic
   const sortedCategories = useMemo(() => {
+    if (!menu.length) return []
     const priorityOrder = [
       'Cortes de carne',
       'Hambúrguer Artesanal',
@@ -114,7 +117,7 @@ export default function CardapioPage() {
       'RISOTOS',
     ]
 
-    return [...(menuData as any[])].sort((a, b) => {
+    return [...menu].sort((a, b) => {
       const idxA = priorityOrder.indexOf(a.name)
       const idxB = priorityOrder.indexOf(b.name)
 
@@ -123,7 +126,7 @@ export default function CardapioPage() {
       if (idxB !== -1) return 1
       return 0
     })
-  }, [])
+  }, [menu])
 
   const displayedCategories = showAllCategories ? sortedCategories : sortedCategories.slice(0, 4)
 

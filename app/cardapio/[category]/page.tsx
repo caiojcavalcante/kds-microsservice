@@ -3,14 +3,13 @@
 import { use, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { notFound } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowLeft, ShoppingBag } from "lucide-react"
+import { ArrowLeft, ShoppingBag, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import menuData from "@/app/data/menu.json"
+import { useMenu } from "@/hooks/use-menu"
 import { ProductCustomizer, Product } from "@/components/product-customizer"
 import { useCart } from "@/contexts/cart-context"
 
@@ -19,13 +18,29 @@ const slugify = (text: string) => text.toLowerCase().normalize("NFD").replace(/[
 
 export default function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
   const { category: categorySlug } = use(params)
+  const { menu, loading } = useMenu()
   const { addToCart } = useCart()
   const [configuringProduct, setConfiguringProduct] = useState<Product | null>(null)
 
-  const category = menuData.find(c => slugify(c.name) === categorySlug)
+  const category = menu.find(c => slugify(c.name) === categorySlug)
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-neutral-400" />
+      </div>
+    )
+  }
 
   if (!category) {
-    notFound()
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+        <h1 className="text-2xl font-bold mb-4">Categoria não encontrada</h1>
+        <Link href="/cardapio">
+          <Button>Voltar ao Cardápio</Button>
+        </Link>
+      </div>
+    )
   }
 
   return (
@@ -72,7 +87,7 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
             >
               <Card
                 className="overflow-hidden h-full hover:shadow-fire transition-all duration-300 border-red-950/30 group flex flex-col cursor-pointer"
-                onClick={() => setConfiguringProduct(item as Product)}
+                onClick={() => setConfiguringProduct(item as any)}
               >
                 <div className="relative aspect-square overflow-hidden bg-muted">
                   {item.img ? (

@@ -64,16 +64,33 @@
                 "cardápio",
                 "pedido"
             ],
-            "response_template": "Oie! Sou a Fernanda do Ferro e Fogo Parrilla. Posso te enviar o cardápio ou já montar seu pedido?"
+            "response_template": "Oie! Sou a Fernanda do Ferro e Fogo Parrilla 🔥 Você pode conferir nosso cardápio completo em https://ferroefogo.midasspark.cloud e finalizar seu pedido por lá, ou se preferir, posso montar seu pedido aqui mesmo pelo chat!"
         },
         {
             "state": "OFERTA",
-            "goal": "Apresentar pratos. Use a tool 'GET menu' para obter o menu. Para evitar uso excessivo de tokens, use apenas os pratos que estão sendo mencionados no trigger. Esqueça todos os outros pratos. INCLUA a imageUrl do item em uma nova linha para mostrar o prato ao cliente.",
+            "goal": "Apresentar as CATEGORIAS do cardápio primeiro (não os itens). Use a tool 'GET categorias'. Pergunte qual categoria o cliente quer ver. NÃO use a tool GET menu ainda - economize tokens.",
             "triggers": [
                 "ver cardápio",
-                "opções"
+                "opções",
+                "o que tem"
             ],
-            "response_template": "Temos o {item1}! 🔥\\n{imageUrl do item1}\\nTá a R$ {preco}. Quer esse ou prefere ver outras opções?"
+            "response_template": "Temos várias opções deliciosas! 🔥 Escolhe uma categoria: \n\n{categorias}\n\nQual te interessa?"
+        },
+        {
+            "state": "OFERTA_CATEGORIA",
+            "goal": "O cliente escolheu uma categoria. Use a tool 'GET menu' com category={categoria escolhida}. SE a categoria tiver category_image_url: ENVIE a imagem e NÃO liste os itens (já estão na imagem) - apenas uma mensagem curta convidando a escolher. SE NÃO tiver imagem: liste os itens normalmente com preços.",
+            "triggers": [
+                "hambúrguer",
+                "carne",
+                "risoto",
+                "porções",
+                "bebida",
+                "refrigerante",
+                "cerveja"
+            ],
+            "warning": "Se a categoria tiver category_image_url: ENVIE a imagem e NÃO liste os itens (já estão na imagem) - apenas uma mensagem curta convidando a escolher. SE NÃO tiver imagem: liste os itens normalmente com preços.",
+            "response_template_with_image": "{category_image_url}\\n\\nAqui estão as opções de {categoria}! 🔥 Dá uma olhada e me conta o que te chamou atenção. Que tal acompanhar com uma bebida gelada? 🍺",
+            "response_template_no_image": "Na categoria {categoria} temos:\\n{itens.map(item => `> ${item.name} - R$ ${item.price}`).join('\\n')}\\n\\nQual você quer?"
         },
         {
             "state": "SELECAO_ITENS",

@@ -3,46 +3,60 @@
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, ChevronDown, ChevronUp, UtensilsCrossed } from "lucide-react"
-import { useState } from "react"
+import { ArrowRight, ChevronDown, ChevronUp, UtensilsCrossed, Loader2 } from "lucide-react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-import menuData from "@/app/data/menu.json"
+import { useMenu } from "@/hooks/use-menu"
 
 export function CategoriesGrid() {
+    const { menu, loading } = useMenu()
     const [showAllCategories, setShowAllCategories] = useState(false)
 
     // Filter categories that have items
-    const validCategories = menuData.filter(cat => cat.items && cat.items.length > 0)
+    const validCategories = useMemo(() => {
+        const filtered = menu.filter(cat => cat.items && cat.items.length > 0)
 
-    // Sort categories by priority
-    const priorityOrder = [
-        'Cortes de carne',
-        'Hambúrguer Artesanal',
-        'RISOTOS',
-        'Refrigerantes',
-        'Cervejas'
-    ]
+        // Sort categories by priority
+        const priorityOrder = [
+            'Cortes de carne',
+            'Hambúrguer Artesanal',
+            'RISOTOS',
+            'Refrigerantes',
+            'Cervejas'
+        ]
 
-    validCategories.sort((a, b) => {
-        const idxA = priorityOrder.indexOf(a.name)
-        const idxB = priorityOrder.indexOf(b.name)
+        return [...filtered].sort((a, b) => {
+            const idxA = priorityOrder.indexOf(a.name)
+            const idxB = priorityOrder.indexOf(b.name)
 
-        // If both are in the priority list, sort by index
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB
-        // If only A is in the list, A comes first
-        if (idxA !== -1) return -1
-        // If only B is in the list, B comes first
-        if (idxB !== -1) return 1
-
-        // If neither is in the list, maintain original order
-        return 0
-    })
+            if (idxA !== -1 && idxB !== -1) return idxA - idxB
+            if (idxA !== -1) return -1
+            if (idxB !== -1) return 1
+            return 0
+        })
+    }, [menu])
 
     const displayedCategories = showAllCategories
         ? validCategories
         : validCategories.slice(0, 4)
 
     const slugify = (text: string) => text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ /g, '-').replace(/[^\w-]+/g, '')
+
+    if (loading) {
+        return (
+            <section className="space-y-4">
+                <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold flex items-center gap-2 text-neutral-900 dark:text-white">
+                        <UtensilsCrossed className="h-5 w-5" />
+                        Categorias
+                    </h2>
+                </div>
+                <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-neutral-400" />
+                </div>
+            </section>
+        )
+    }
 
     return (
         <section className="space-y-4">

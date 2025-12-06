@@ -140,72 +140,74 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
       </header>
 
       {/* Mobile Nav (Floating Bottom) */}
-      <div className="md:hidden fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex flex-col items-center gap-4">
-        <nav className="flex items-center gap-1 rounded-full border bg-background/80 backdrop-blur-md p-2 shadow-lg shadow-black/20">
-          {visibleLinks.map((link) => {
-            const isActive = pathname === link.href
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-                  isActive
-                    ? "bg-red-600 text-white shadow-fire"
-                    : "text-muted-foreground hover:bg-muted"
-                )}
-              >
-                <link.icon className="h-5 w-5" />
-                {isActive && (
-                  <motion.div
-                    layoutId="mobile-nav-indicator"
-                    className="absolute inset-0 rounded-full bg-red-600 -z-10"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
-                <span className="sr-only">{link.label}</span>
-              </Link>
-            )
-          })}
+      <div className="md:hidden fixed bottom-10 left-0 right-0 z-50 w-full px-4">
+        <nav className="w-fit mx-auto max-w-full overflow-x-auto rounded-full border bg-background/80 backdrop-blur-md shadow-lg shadow-black/20">
+          <div className="flex items-center justify-center gap-1 p-2 min-w-max mx-auto">
+            {visibleLinks.map((link) => {
+              const isActive = pathname === link.href
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                    isActive
+                      ? "bg-red-600 text-white shadow-fire"
+                      : "text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <link.icon className="h-5 w-5" />
+                  {isActive && (
+                    <motion.div
+                      layoutId="mobile-nav-indicator"
+                      className="absolute inset-0 rounded-full bg-red-600 -z-10"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
+                  )}
+                  <span className="sr-only">{link.label}</span>
+                </Link>
+              )
+            })}
 
-          <Link
-            href="/carrinho"
-            className={cn(
-              "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-              pathname === "/carrinho"
-                ? "bg-red-600 text-white shadow-fire"
-                : "text-muted-foreground hover:bg-muted"
-            )}
-          >
-            <ShoppingCart className="h-5 w-5" />
-            {cart.length > 0 && (
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-[9px] font-bold flex items-center justify-center shadow-sm border border-background">
-                {cart.length}
-              </span>
-            )}
-          </Link>
+            <Link
+              href="/carrinho"
+              className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                pathname === "/carrinho"
+                  ? "bg-red-600 text-white shadow-fire"
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-600 text-white text-[9px] font-bold flex items-center justify-center shadow-sm border border-background">
+                  {cart.length}
+                </span>
+              )}
+            </Link>
 
-          <Link
-            href={user ? "/account" : "/login"}
-            className={cn(
-              "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
-              (pathname === "/account" || pathname === "/login")
-                ? "bg-red-600 text-white shadow-fire"
-                : "text-muted-foreground hover:bg-muted"
-            )}
-          >
-            <User className="h-5 w-5" />
-            {(pathname === "/account" || pathname === "/login") && (
-              <motion.div
-                layoutId="mobile-nav-indicator"
-                className="absolute inset-0 rounded-full bg-red-600 -z-10"
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
-            )}
-          </Link>
+            <Link
+              href={user ? "/account" : "/login"}
+              className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+                (pathname === "/account" || pathname === "/login")
+                  ? "bg-red-600 text-white shadow-fire"
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <User className="h-5 w-5" />
+              {(pathname === "/account" || pathname === "/login") && (
+                <motion.div
+                  layoutId="mobile-nav-indicator"
+                  className="absolute inset-0 rounded-full bg-red-600 -z-10"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+            </Link>
 
-          <div className="flex items-center justify-center w-10 h-10">
-            <ModeToggle />
+            <div className="flex items-center justify-center w-10 h-10">
+              <ModeToggle />
+            </div>
           </div>
         </nav>
       </div>
