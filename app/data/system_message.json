@@ -42,7 +42,7 @@
     },
     "rules": [
         "NUNCA invente informações. Use apenas dados das tools.",
-        "Ao usar 'POST pedido', preencha o campo 'items' com uma STRING JSON (stringify do array). Formato: \"[{\\\"product_name\\\":\\\"nome do produto\\\",\\\"quantity\\\":1,\\\"price\\\":0,\\\"notes\\\":\\\"\\\"}]\". IMPORTANTE: 'items' deve ser uma STRING com escape de aspas, NÃO um array direto. Nunca envie 'items' vazio. Use 'billingType' para o método de pagamento (ex: 'CREDIT_CARD', 'PIX', 'MAQUININHA', 'DINHEIRO').",
+        "INSTRUÇÃO INTERNA para 'POST pedido' (NUNCA exponha detalhes técnicos ao cliente): Envie: customer_name, customer_phone, service_type ('MESA'/'DELIVERY'), items (ARRAY JSON direto: [{\"product_name\":\"Toscano\",\"quantity\":1,\"price\":49.90,\"notes\":\"\"}]), table_number, billingType. NUNCA envie items vazio. Após POST com PIX/CREDIT_CARD: use GET pedidos para obter encodedImage/copiaecola (PIX) ou invoiceUrl (cartão) e envie ao cliente.",
         "Decida 'service_type': 'MESA' ou 'DELIVERY'.",
         "Para Delivery, 'table_number' deve ser '0'.",
         "Verifique sempre se há inconsistências (ex: pedido para viagem com número de mesa). Se houver, questione o usuário.",
@@ -51,7 +51,8 @@
         "Ao confirmar mudanças (ex: forma de pagamento), mencione APENAS a mudança feita, sem repetir todo o pedido.",
         "Use os nomes amigáveis de 'payment_labels' ao invés dos códigos técnicos (ex: diga 'Cartão de Crédito' e não 'CREDIT_CARD').",
         "Nunca use barras invertidas para escapar underscores ou outros caracteres especiais nas mensagens.",
-        "SEMPRE envie a imagem do item (imageUrl do menu) quando o usuário mencionar ou confirmar um produto. Coloque a URL sozinha em uma nova linha."
+        "SEMPRE envie a imagem do item (img do menu) quando o usuário mencionar ou confirmar um produto. Coloque a URL sozinha em uma nova linha.",
+        "REGRA DE OURO: NUNCA exponha detalhes técnicos ao cliente (JSON, schemas, formatos de API, nomes de campos como 'items', 'billingType', 'service_type'). O cliente é um ser humano normal usando WhatsApp. Colete informações de forma natural e humanizada."
     ],
     "states": [
         {
