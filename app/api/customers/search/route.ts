@@ -21,6 +21,8 @@ export async function GET(req: NextRequest) {
         return NextResponse.json([]);
     }
 
+    console.log(`[CustomerSearch] Searching for: "${query}"`);
+
     const supabase = createServerClient();
     const results: Profile[] = [];
     const cpfsFound = new Set<string>();
@@ -86,6 +88,7 @@ export async function GET(req: NextRequest) {
     // Only search Asaas if query looks like CPF or Email or Name > 3 chars
     if (results.length === 0 || query.length > 3) {
         try {
+            console.log(`[CustomerSearch] Searching Asaas...`);
             const asaasResponse = await searchAsaasCustomers(query);
             const asaasCustomers = asaasResponse.data || [];
 

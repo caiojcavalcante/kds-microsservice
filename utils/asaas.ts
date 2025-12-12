@@ -115,6 +115,8 @@ export async function searchAsaasCustomers(query: string) {
     const isCpfCnpj = /^\d+$/.test(query.replace(/\D/g, ''));
     const param = isCpfCnpj ? `cpfCnpj=${query.replace(/\D/g, '')}` : `name=${encodeURIComponent(query)}`;
 
+    console.log(`[Asaas] Fetching customers from: ${ASAAS_API_URL} (Param: ${param})`);
+
     const response = await fetch(`${ASAAS_API_URL}/customers?${param}&limit=10`, {
         method: "GET",
         headers: {
