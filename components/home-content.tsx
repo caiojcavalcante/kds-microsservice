@@ -18,6 +18,7 @@ import {
 import Image from "next/image"
 import { PromoBanner } from "@/components/promo-banner"
 import { CategoriesGrid } from "@/components/categories-grid"
+import { InstagramFeed } from "@/components/instagram-feed"
 import { useMenu, type MenuItem } from "@/hooks/use-menu"
 import { ProductCustomizer, Product, Choice } from "@/components/product-customizer"
 import { useCart } from "@/contexts/cart-context"
@@ -202,6 +203,9 @@ export function HomeContent({ profile }: { profile?: any }) {
                     })
                 )}
             </div>
+
+            {/* Instagram Feed */}
+            <InstagramFeed categories={menu} onProductSelect={handleProductClick} />
 
             {/* Cards Section - Only for Admins */}
             {isAdmin && (

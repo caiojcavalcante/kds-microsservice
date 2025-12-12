@@ -31,6 +31,7 @@ type Customer = {
   cpf?: string // Local field
   email?: string
   source?: "LOCAL" | "ASAAS"
+  address?: any // Active address from search
 }
 
 // --- Components ---
@@ -206,7 +207,14 @@ export default function CartPage() {
       if (data && data.length > 0) {
         // Found
         setCustomer(data[0])
-        toast.success(`Bem-vindo de volta, ${data[0].full_name || data[0].name.split(' ')[0]}!`)
+        const first = data[0].full_name || data[0].name || ""
+        toast.success(`Bem-vindo de volta, ${first.split(' ')[0]}!`)
+
+        // If address is provided in search (smart optimization), we could set it
+        if (data[0].address) {
+          console.log("Preloading address:", data[0].address)
+        }
+
         setStep("address")
       } else {
         // Not found
@@ -631,6 +639,7 @@ export default function CartPage() {
                   {customer && (
                     <AddressSelector
                       userId={customer.id}
+                      preloadedAddress={customer.address}
                       onSelect={(addr) => setDeliveryAddress(addr)}
                     />
                   )}

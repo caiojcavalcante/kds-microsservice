@@ -23,10 +23,11 @@ type Address = {
 
 type AddressSelectorProps = {
     userId?: string
+    preloadedAddress?: Address // New Prop
     onSelect: (address: string) => void
 }
 
-export function AddressSelector({ userId, onSelect }: AddressSelectorProps) {
+export function AddressSelector({ userId, preloadedAddress, onSelect }: AddressSelectorProps) {
     const [addresses, setAddresses] = useState<Address[]>([])
     const [loading, setLoading] = useState(false)
     const [mode, setMode] = useState<"list" | "new">("list")
@@ -51,6 +52,13 @@ export function AddressSelector({ userId, onSelect }: AddressSelectorProps) {
         async function fetchAddresses() {
             if (!userId) return
 
+            // If we have a preloaded address, use it first to speed up UI
+            if (preloadedAddress) {
+                setAddresses([preloadedAddress])
+                handleSelect(preloadedAddress)
+                setMode("list")
+            }
+
             setLoading(true)
             const supabase = createClient()
             let query = supabase.from('addresses').select('*')
@@ -67,10 +75,11 @@ export function AddressSelector({ userId, onSelect }: AddressSelectorProps) {
                 setAddresses(data)
                 if (data.length > 0) {
                     setMode("list")
-                    // Auto select default or first
+                    // Auto select default or first (prioritize checks)
+                    // If we already selected via preloaded, we might want to keep it or confirm
                     const def = data.find(a => a.is_default) || data[0]
                     handleSelect(def)
-                } else {
+                } else if (!preloadedAddress) {
                     setMode("new")
                 }
             }
