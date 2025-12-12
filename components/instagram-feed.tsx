@@ -180,7 +180,7 @@ export function InstagramFeed({ categories = [], onProductSelect }: InstagramFee
                 </div>
 
                 {/* HIGHLIGHTS (Dynamic Categories) */}
-                <div className="flex justify-start gap-6 md:gap-8 mb-12 overflow-x-scroll pb-4 scrollbar-hide px-4">
+                <div className="flex justify-start gap-6 md:gap-8 mb-12 overflow-x-scroll overflow-y-hidden pb-4 scrollbar-hide px-4">
                     {validCategories.map((category: any, i: number) => {
                         // Find first valid image for cover
                         const coverItem = category.items.find((it: any) => it.img)

@@ -47,7 +47,13 @@ export async function GET(req: NextRequest) {
     // If cleanQuery is long enough, try matching against stored numeric fields if they exist
     // But since we rely on 'ilike' against text columns that might be formatted:
 
-    queryBuilder = queryBuilder.or(`full_name.ilike.%${query}%,email.ilike.%${query}%,cpf.ilike.%${query}%,phone.ilike.%${query}%`);
+    let orConditions = `full_name.ilike.%${query}%,email.ilike.%${query}%,cpf.ilike.%${query}%,phone.ilike.%${query}%`;
+
+    if (cleanQuery.length > 0) {
+        orConditions += `,cpf.ilike.%${cleanQuery}%,phone.ilike.%${cleanQuery}%`;
+    }
+
+    queryBuilder = queryBuilder.or(orConditions);
 
     // NOTE: If your DB stores CPFs as "12345678900" but user types "123.456", the above might fail.
     // If DB stores formatted, and user types unformatted, it also fails.
