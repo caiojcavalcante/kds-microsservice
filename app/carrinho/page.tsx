@@ -16,6 +16,11 @@ import { useMenu } from "@/hooks/use-menu"
 import Image from "next/image"
 import { toast } from "sonner"
 import { AddressSelector } from "@/components/pdv/address-selector"
+import { ProductCustomizer, CartItem as OriginalCartItem } from "@/components/product-customizer"
+
+// Map OriginalCartItem to expected local type or just use it directly if compatible
+// The local usage seems to rely on the context which uses CartItem from product-customizer
+// We'll rely on the context's type mainly.
 
 // --- Types ---
 
@@ -117,7 +122,7 @@ function PlusIcon({ className }: { className?: string }) {
 
 export default function CartPage() {
   const { menu } = useMenu()
-  const { cart, removeFromCart, cartTotal, clearCart, addToCart, updateQuantity } = useCart()
+  const { cart, removeFromCart, cartTotal, clearCart, addToCart, updateQuantity, editItem } = useCart()
 
   // State
   const [step, setStep] = useState<CheckoutStep>("cart")
@@ -143,6 +148,9 @@ export default function CartPage() {
   const [paymentResult, setPaymentResult] = useState<any>(null)
   const [orderCode, setOrderCode] = useState<string | null>(null)
   const [lastOrderCode, setLastOrderCode] = useState<string | null>(null)
+
+  // Editing
+  const [editingItem, setEditingItem] = useState<any>(null)
 
   // Scroll Refs
   const upsellRef = useRef<HTMLDivElement>(null)
@@ -468,7 +476,11 @@ export default function CartPage() {
               <>
                 <div className="space-y-4">
                   {cart.map((item) => (
-                    <div key={item.uniqueId} className="bg-neutral-900/50 border border-white/5 rounded-2xl p-3 flex gap-4 items-center">
+                    <div
+                      key={item.uniqueId}
+                      className="bg-neutral-900/50 border border-white/5 rounded-2xl p-3 flex gap-4 items-center relative group cursor-pointer hover:bg-neutral-800/50 transition-colors"
+                      onClick={() => setEditingItem(item)}
+                    >
                       <div className="relative h-20 w-20 rounded-xl overflow-hidden bg-neutral-800 shrink-0">
                         {item.product.img ? (
                           <Image src={item.product.img} alt={item.product.name} fill className="object-cover" />
@@ -485,12 +497,18 @@ export default function CartPage() {
                           {Object.values(item.selectedOptions).flat().map(o => o.name).join(", ")}
                         </div>
                         <div className="flex items-center justify-between mt-3">
-                          <div className="flex items-center gap-3 bg-neutral-950 rounded-lg p-1 border border-white/5">
+                          <div className="flex items-center gap-3 bg-neutral-950 rounded-lg p-1 border border-white/5" onClick={(e) => e.stopPropagation()}>
                             <button className="h-6 w-6 flex items-center justify-center text-neutral-400 hover:text-white" onClick={() => updateQuantity(item.uniqueId, -1)} disabled={item.quantity <= 1}>-</button>
                             <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
                             <button className="h-6 w-6 flex items-center justify-center text-neutral-400 hover:text-white" onClick={() => updateQuantity(item.uniqueId, 1)}>+</button>
                           </div>
-                          <button className="h-8 w-8 flex items-center justify-center text-red-500/50 hover:text-red-500 transition-colors" onClick={() => removeFromCart(item.uniqueId)}>
+                          <button
+                            className="h-8 w-8 flex items-center justify-center text-red-500/50 hover:text-red-500 transition-colors"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              removeFromCart(item.uniqueId)
+                            }}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
@@ -731,6 +749,24 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {editingItem && (
+        <ProductCustomizer
+          product={editingItem.product}
+          initialValues={{
+            quantity: editingItem.quantity,
+            selectedOptions: editingItem.selectedOptions,
+            notes: editingItem.notes
+          }}
+          onClose={() => setEditingItem(null)}
+          onConfirm={(updatedItem) => {
+            editItem(editingItem.uniqueId, updatedItem)
+            setEditingItem(null)
+            toast.success("Item atualizado!")
+          }}
+          showBuyNow={false}
+        />
+      )}
     </div>
   )
 }

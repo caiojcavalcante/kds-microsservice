@@ -8,6 +8,7 @@ type CartContextType = {
   addToCart: (item: Omit<CartItem, "uniqueId">) => void
   removeFromCart: (uniqueId: string) => void
   updateQuantity: (uniqueId: string, delta: number) => void
+  editItem: (uniqueId: string, updatedItem: Partial<CartItem>) => void
   clearCart: () => void
   cartTotal: number
 }
@@ -57,10 +58,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }))
   }
 
+  const editItem = (uniqueId: string, updatedItem: Partial<CartItem>) => {
+    setCart(prev => prev.map(item => {
+      if (item.uniqueId === uniqueId) {
+        return { ...item, ...updatedItem }
+      }
+      return item
+    }))
+  }
+
   const cartTotal = cart.reduce((acc, item) => acc + item.totalPrice, 0)
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, clearCart, cartTotal }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQuantity, editItem, clearCart, cartTotal }}>
       {children}
     </CartContext.Provider>
   )

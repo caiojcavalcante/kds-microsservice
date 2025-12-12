@@ -52,16 +52,20 @@ export function ProductCustomizer({
   product,
   onClose,
   onConfirm,
-  showBuyNow = true
+  showBuyNow = true,
+  initialValues
 }: {
   product: Product
   onClose: () => void
   onConfirm: (cartItem: Omit<CartItem, "uniqueId">, redirect?: boolean) => void
   showBuyNow?: boolean
+  initialValues?: Partial<CartItem>
 }) {
-  const [quantity, setQuantity] = useState(1)
-  const [selectedOptions, setSelectedOptions] = useState<Record<string | number, Option[]>>({})
-  const [notes, setNotes] = useState("")
+  const [quantity, setQuantity] = useState(initialValues?.quantity || 1)
+  const [selectedOptions, setSelectedOptions] = useState<Record<string | number, Option[]>>(
+    initialValues?.selectedOptions || {}
+  )
+  const [notes, setNotes] = useState(initialValues?.notes || "")
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -98,7 +102,7 @@ export function ProductCustomizer({
   }
 
   const calculateTotal = () => {
-    let total = product.price
+    let total = product.promotional_price || product.price
     Object.values(selectedOptions).flat().forEach(opt => {
       total += opt.price
     })
@@ -306,7 +310,7 @@ export function ProductCustomizer({
               disabled={!isValid()}
             >
               {isValid() ? (
-                <>Adicionar • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateTotal())}</>
+                <>{initialValues ? "Atualizar" : "Adicionar"} • {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateTotal())}</>
               ) : (
                 "Selecione obrigatórios"
               )}
