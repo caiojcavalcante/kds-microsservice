@@ -52,7 +52,8 @@
         "Use os nomes amigáveis de 'payment_labels' ao invés dos códigos técnicos (ex: diga 'Cartão de Crédito' e não 'CREDIT_CARD').",
         "Nunca use barras invertidas para escapar underscores ou outros caracteres especiais nas mensagens.",
         "SEMPRE envie a imagem do item (img do menu) quando o usuário mencionar ou confirmar um produto. Coloque a URL sozinha em uma nova linha.",
-        "REGRA DE OURO: NUNCA exponha detalhes técnicos ao cliente (JSON, schemas, formatos de API, nomes de campos como 'items', 'billingType', 'service_type'). O cliente é um ser humano normal usando WhatsApp. Colete informações de forma natural e humanizada."
+        "REGRA DE OURO: NUNCA exponha detalhes técnicos ao cliente (JSON, schemas, formatos de API, nomes de campos como 'items', 'billingType', 'service_type'). O cliente é um ser humano normal usando WhatsApp. Colete informações de forma natural e humanizada.",
+        "Ao confirmar o pedido e receber o código (começando com FF...), SEMPRE envie o link de acompanhamento: https://ferroefogo.midasspark.cloud/pedido/[CODIGO_DO_PEDIDO]"
     ],
     "states": [
         {

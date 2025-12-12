@@ -1,6 +1,6 @@
-// app/api/orders/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/utils/supabase/admin";
+import menuData from "@/app/data/menu.json";
 
 export const dynamic = "force-dynamic"; // evita cache em edge
 
@@ -11,6 +11,34 @@ type ItemInput = {
   quantity?: number | string;
   notes?: string;
 };
+
+function findPriceInMenu(productName: string): number {
+  if (!productName) return 0;
+  const lowerName = productName.toLowerCase().trim();
+
+  for (const category of menuData) {
+    if (category.items) {
+      for (const item of category.items) {
+        if (item.name.toLowerCase().trim() === lowerName) {
+          return item.promotional_price ?? item.price;
+        }
+
+        if (item.choices) {
+          for (const choice of item.choices) {
+            if (choice.options) {
+              for (const option of choice.options) {
+                if (option.name.toLowerCase().trim() === lowerName) {
+                  return option.price;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return 0;
+}
 
 // Criar pedido (PDV) - POST /api/orders
 export async function POST(req: NextRequest) {
@@ -64,6 +92,17 @@ export async function POST(req: NextRequest) {
           );
         }
 
+        let price = (item as any).price ? Number((item as any).price) : 0;
+
+        // --- FALLBACK PRICE ---
+        // If price is 0, try to find it in the menu
+        if (price === 0) {
+          const foundPrice = findPriceInMenu(product_name);
+          if (foundPrice > 0) {
+            price = foundPrice;
+          }
+        }
+
         return {
           product_name,
           quantity:
@@ -71,7 +110,7 @@ export async function POST(req: NextRequest) {
               ? Number(item.quantity)
               : 1,
           notes: item.notes ? String(item.notes) : null,
-          price: (item as any).price ? Number((item as any).price) : 0,
+          price,
         };
       }
     );
