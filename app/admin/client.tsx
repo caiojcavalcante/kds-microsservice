@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { AlertTriangle, CheckCircle2, Clock, Flame, Package, Settings, Search, X, Save, Trash2, Plus, Minus, ChevronDown, Calendar, Wallet, CreditCard, Banknote, QrCode, Printer, ChefHat, Truck, ArrowRight, TrendingUp } from "lucide-react"
+import { AlertTriangle, CheckCircle2, Clock, Flame, Package, Settings, Search, X, Save, Trash2, Plus, Minus, ChevronDown, Calendar, Wallet, CreditCard, Banknote, QrCode, Printer, ChefHat, Truck, ArrowRight, TrendingUp, Lock, User } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cell, Area, AreaChart } from "recharts"
@@ -364,7 +364,7 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
   }, [orders])
 
   return (
-    <div className="space-y-8 bg-neutral-950 min-h-screen text-neutral-100 p-8">
+    <div className="space-y-8 bg-neutral-950/40 backdrop-blur-xl rounded-4xl min-h-screen text-neutral-100 p-8">
 
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
@@ -592,19 +592,21 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
       {/* Edit Modal (Redesigned) */}
       <AnimatePresence>
         {isPanelOpen && selectedOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 flex items-center justify-center p-4 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={handleClosePanel}
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              style={{ willChange: 'opacity' }}
             />
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-4xl bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+              className="relative w-full max-w-4xl bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden max-h-[85dvh] flex flex-col z-20"
+              style={{ willChange: 'transform, opacity' }}
             >
               <div className="p-6 border-b border-neutral-800 bg-neutral-900 flex justify-between items-start z-10 shrink-0">
                 <div>
@@ -1070,32 +1072,194 @@ function CaixaTab({ orders, calculateOrderTotal }: { orders: OrderRow[], calcula
       </Dialog>
 
       <Dialog open={showCloseModal} onOpenChange={setShowCloseModal}>
-        <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
-          <DialogHeader><DialogTitle>Fechar Caixa</DialogTitle></DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2"><Label>Operador</Label><Input value={operatorName} onChange={e => setOperatorName(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
-            <div className="space-y-2"><Label>Valor em Gaveta (Dinheiro)</Label><Input type="number" value={countedCash} onChange={e => setCountedCash(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
-            <div className="space-y-2"><Label>Observações</Label><Textarea value={closeNotes} onChange={e => setCloseNotes(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5 text-red-500" />
+              Fechar Caixa
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4 space-y-6">
+            {/* Session Summary */}
+            <div className="bg-neutral-800/50 p-4 rounded-xl space-y-3 border border-neutral-800">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-neutral-400">Aberto por:</span>
+                <span className="font-medium text-white flex items-center gap-1">
+                  <User className="h-3 w-3" /> {currentSession?.opened_by_name}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-neutral-400">Valor em Dinheiro (Vendas):</span>
+                <span className="font-mono text-emerald-500">
+                  + {formatCurrency(caixaData.paymentMethods.DINHEIRO.total)}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-neutral-400">Fundo Inicial:</span>
+                <span className="font-mono text-neutral-300">
+                  + {formatCurrency(currentSession?.initial_balance || 0)}
+                </span>
+              </div>
+              <div className="border-t border-dashed border-neutral-700 pt-2 flex justify-between items-center">
+                <span className="font-bold text-amber-500">Esperado em Gaveta:</span>
+                <span className="font-bold font-mono text-xl text-amber-500">
+                  {formatCurrency((currentSession?.initial_balance || 0) + caixaData.paymentMethods.DINHEIRO.total)}
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>Quem está fechando?</Label>
+                <Input
+                  value={operatorName}
+                  onChange={e => setOperatorName(e.target.value)}
+                  placeholder="Seu nome"
+                  className="bg-neutral-950 border-neutral-700"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Valor Contado (Gaveta)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">R$</span>
+                  <Input
+                    type="number"
+                    value={countedCash}
+                    onChange={e => setCountedCash(e.target.value)}
+                    className="bg-neutral-950 border-neutral-700 pl-8 font-mono text-lg"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Observações (Diferenças, sangrias...)</Label>
+                <Textarea
+                  value={closeNotes}
+                  onChange={e => setCloseNotes(e.target.value)}
+                  className="bg-neutral-950 border-neutral-700 resize-none"
+                  rows={3}
+                />
+              </div>
+            </div>
           </div>
-          <DialogFooter><Button onClick={handleCloseCaixa} disabled={isSubmitting} variant="destructive">Confirmar Fechamento</Button></DialogFooter>
+          <DialogFooter>
+            <Button onClick={() => setShowCloseModal(false)} variant="ghost" className="text-neutral-400 hover:text-white">Cancelar</Button>
+            <Button onClick={handleCloseCaixa} disabled={isSubmitting} variant="destructive" className="bg-red-600 hover:bg-red-700">
+              <Lock className="h-4 w-4 mr-2" /> Confirmar Fechamento
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-        <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
-          <DialogHeader><DialogTitle>Receber Pagamento</DialogTitle></DialogHeader>
-          <div className="space-y-4 py-4">
-            <p className="text-2xl font-bold text-center text-emerald-500">{payingOrder && formatCurrency(payingOrder.total || calculateOrderTotal(payingOrder.items))}</p>
-            <div className="grid grid-cols-2 gap-2">
-              {['DINHEIRO', 'PIX', 'CREDIT_CARD', 'MAQUININHA'].map(m => (
-                <Button key={m} variant={paymentMethod === m ? 'default' : 'outline'} onClick={() => setPaymentMethod(m as any)} className={cn(paymentMethod === m ? "bg-amber-500 text-black hover:bg-amber-600" : "bg-transparent border-neutral-700 text-neutral-300")}>{m}</Button>
-              ))}
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wallet className="h-5 w-5 text-emerald-500" />
+              Receber Pagamento
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="py-4 space-y-6">
+            <div className="text-center space-y-1">
+              <p className="text-neutral-400 text-sm">Total a Receber</p>
+              <p className="text-4xl font-bold text-white tracking-tight">
+                {payingOrder && formatCurrency(payingOrder.total || calculateOrderTotal(payingOrder.items))}
+              </p>
             </div>
+
+            {/* Online Payment Info (Pix/Link) if available */}
+            {(payingOrder?.encodedImage || payingOrder?.invoiceUrl || payingOrder?.copiaecola) && (
+              <div className="bg-neutral-800/50 rounded-xl p-4 border border-neutral-800 space-y-4">
+                <Label className="text-amber-500 text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+                  <QrCode className="h-3 w-3" /> Pagamento Digital
+                </Label>
+
+                <div className="flex gap-4">
+                  {payingOrder.encodedImage && (
+                    <div className="bg-white p-2 rounded-lg shrink-0">
+                      <img src={`data:image/png;base64,${payingOrder.encodedImage}`} alt="QR Code" className="h-24 w-24" />
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-3 min-w-0">
+                    {payingOrder.copiaecola && (
+                      <div className="space-y-1">
+                        <p className="text-xs text-neutral-400">Pix Copia e Cola</p>
+                        <div className="flex gap-2">
+                          <code className="flex-1 bg-neutral-950 p-2 rounded border border-neutral-700 text-[10px] break-all h-16 overflow-y-auto">
+                            {payingOrder.copiaecola}
+                          </code>
+                          <Button size="icon" variant="secondary" className="h-8 w-8 shrink-0" onClick={() => {
+                            navigator.clipboard.writeText(payingOrder.copiaecola!)
+                            toast.success("Copiado!")
+                          }}>
+                            <CheckCircle2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {payingOrder.invoiceUrl && (
+                      <Button asChild variant="outline" size="sm" className="w-full border-neutral-700 text-neutral-300 hover:bg-neutral-800">
+                        <a href={payingOrder.invoiceUrl} target="_blank" rel="noopener noreferrer">
+                          Abrir Link de Pagamento <ArrowRight className="ml-2 h-3 w-3" />
+                        </a>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <Label>Método de Pagamento</Label>
+              <div className="grid grid-cols-2 gap-2">
+                {['DINHEIRO', 'PIX', 'CREDIT_CARD', 'MAQUININHA'].map(m => (
+                  <Button
+                    key={m}
+                    variant={paymentMethod === m ? 'default' : 'outline'}
+                    onClick={() => setPaymentMethod(m as any)}
+                    className={cn(
+                      "h-12",
+                      paymentMethod === m
+                        ? "bg-amber-500 text-black hover:bg-amber-600 border-transparent shadow-lg shadow-amber-500/20"
+                        : "bg-transparent border-neutral-800 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                    )}
+                  >
+                    {m === 'CREDIT_CARD' ? 'CARTÃO' : m}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
             {paymentMethod === 'DINHEIRO' && (
-              <div className="space-y-2"><Label>Valor Recebido</Label><Input type="number" value={receivedAmount} onChange={e => setReceivedAmount(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+              <div className="space-y-2 bg-neutral-800/30 p-4 rounded-xl border border-neutral-800">
+                <Label>Valor Recebido (Dinheiro)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">R$</span>
+                  <Input
+                    type="number"
+                    value={receivedAmount}
+                    onChange={e => setReceivedAmount(e.target.value)}
+                    className="bg-neutral-950 border-neutral-700 pl-8 font-mono text-lg"
+                  />
+                </div>
+                {receivedAmount && parseFloat(receivedAmount) > (Math.max(0, payingOrder?.total || 0)) && (
+                  <div className="flex justify-between items-center pt-2 text-emerald-500">
+                    <span className="font-bold">Troco:</span>
+                    <span className="font-bold font-mono text-lg">
+                      {formatCurrency(parseFloat(receivedAmount) - (payingOrder?.total || calculateOrderTotal(payingOrder?.items || null)))}
+                    </span>
+                  </div>
+                )}
+              </div>
             )}
           </div>
-          <DialogFooter><Button onClick={handleProcessPayment} disabled={paymentProcessing} className="w-full bg-emerald-600 hover:bg-emerald-700">Confirmar Recebimento</Button></DialogFooter>
+          <DialogFooter>
+            <Button onClick={handleProcessPayment} disabled={paymentProcessing} className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 text-lg font-bold shadow-lg shadow-emerald-500/20">
+              Confirmar Recebimento
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

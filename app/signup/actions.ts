@@ -18,6 +18,7 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
+      emailRedirectTo: "https://ferroefogo.midasspark.cloud/auth/callback",
       data: {
         full_name: fullName,
         phone,

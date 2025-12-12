@@ -74,24 +74,8 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black md:p-8">
+    <main className="min-h-screen bg-black md:p-4 p-4 pb-36">
       <div className="mx-auto max-w-7xl space-y-8">
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Settings className="h-8 w-8 text-red-600" />
-              Admin
-            </h1>
-            <p className="text-muted-foreground">
-              Visão geral dos pedidos e estatísticas
-            </p>
-          </div>
-          <Badge variant="outline" className="h-8 gap-2">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            Supabase Conectado
-          </Badge>
-        </header>
-
         <AdminClient initialOrders={safeOrders} menu={menu} />
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
