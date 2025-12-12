@@ -49,6 +49,8 @@ export function AddressSelector({ userId, onSelect }: AddressSelectorProps) {
         }
 
         async function fetchAddresses() {
+            if (!userId) return
+
             setLoading(true)
             const supabase = createClient()
             let query = supabase.from('addresses').select('*')
