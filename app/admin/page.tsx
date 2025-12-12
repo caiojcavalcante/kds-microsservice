@@ -74,9 +74,9 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background p-4 md:p-8">
+    <main className="min-h-screen bg-black md:p-8">
       <div className="mx-auto max-w-7xl space-y-8">
-        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-8">
           <div>
             <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
               <Settings className="h-8 w-8 text-red-600" />
@@ -92,6 +92,7 @@ export default async function AdminPage() {
           </Badge>
         </header>
 
+        <AdminClient initialOrders={safeOrders} menu={menu} />
         {error && (
           <div className="rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
             <div className="flex items-center gap-2 font-semibold">
@@ -101,8 +102,6 @@ export default async function AdminPage() {
             <p className="text-sm opacity-90">{error.message}</p>
           </div>
         )}
-
-        <AdminClient initialOrders={safeOrders} menu={menu} />
 
       </div>
     </main>

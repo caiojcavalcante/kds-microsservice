@@ -26,7 +26,10 @@ export async function PUT(
     total,
     delivered_by_id,
     delivered_by_name,
-    delivered_at
+    delivered_at,
+    copiaecola,
+    encodedImage,
+    invoiceUrl
   } = body
 
   const updateData: any = {}
@@ -46,6 +49,9 @@ export async function PUT(
   if (delivered_by_id !== undefined) updateData.delivered_by_id = delivered_by_id
   if (delivered_by_name !== undefined) updateData.delivered_by_name = delivered_by_name
   if (delivered_at !== undefined) updateData.delivered_at = delivered_at
+  if (copiaecola !== undefined) updateData.copiaecola = copiaecola
+  if (encodedImage !== undefined) updateData.encodedImage = encodedImage
+  if (invoiceUrl !== undefined) updateData.invoiceUrl = invoiceUrl
 
   updateData.updated_at = new Date().toISOString()
 

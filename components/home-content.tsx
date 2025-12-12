@@ -92,7 +92,7 @@ export function HomeContent({ profile }: { profile?: any }) {
                     >
                         <div className="relative w-[100px] h-[100px] mr-2">
                             <Image
-                                src="/logo-light.png"
+                                src="/logo-light.jpeg"
                                 alt="Logo"
                                 fill
                                 className="object-contain dark:hidden mix-blend-multiply dark:mix-blend-normal"

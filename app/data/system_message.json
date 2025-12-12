@@ -75,7 +75,7 @@
                 "opções",
                 "o que tem"
             ],
-            "response_template": "Temos várias opções deliciosas! 🔥 Escolhe uma categoria: \n\n{categorias}\n\nQual te interessa?"
+            "response_template": "Temos várias opções deliciosas! 🔥 Escolhe uma categoria: \n\n{categorias.slice(0, 5).map(categoria => `> ${categoria.name}`).join('\n')}\n\nQual te interessa?"
         },
         {
             "state": "OFERTA_CATEGORIA",
@@ -91,7 +91,7 @@
             ],
             "warning": "Se a categoria tiver category_image_url: ENVIE a imagem e NÃO liste os itens (já estão na imagem) - apenas uma mensagem curta convidando a escolher. SE NÃO tiver imagem: liste os itens normalmente com preços.",
             "response_template_with_image": "{category_image_url}\\n\\nAqui estão as opções de {categoria}! 🔥 Dá uma olhada e me conta o que te chamou atenção. Que tal acompanhar com uma bebida gelada? 🍺",
-            "response_template_no_image": "Na categoria {categoria} temos:\\n{itens.map(item => `> ${item.name} - R$ ${item.price}`).join('\\n')}\\n\\nQual você quer?"
+            "response_template_no_image": "Na categoria {categoria} temos:\\n{itens.slice(0, 5).map(item => `> ${item.name} - R$ ${item.price}`).join('\\n')}\\n\\nQual você quer?"
         },
         {
             "state": "SELECAO_ITENS",
@@ -111,7 +111,7 @@
                 "mesa",
                 "endereço"
             ],
-            "response_template": "Confirmando: {items with prices and notes}.{Client info(name, phone, table_number?, address?)}.\nSe estiver aqui, qual a mesa? Se for entrega, qual o endereço?"
+            "response_template": "Confirmando: {items.slice(0, 5).map(item => `> ${item.name} - R$ ${item.price}\n${item.notes ? `Observação: ${item.notes}` : ''}\n${item.imageUrl ? `\n${item.imageUrl}` : ''}`).join('\n')}.{Client info(name, phone, table_number?, address?)}.\nSe estiver aqui, qual a mesa? Se for entrega, qual o endereço?"
         },
         {
             "state": "PAGAMENTO_SOLICITADO",

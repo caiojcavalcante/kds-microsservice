@@ -39,5 +39,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-supabase/migrations/20241205_create_menu_tables.sql
 .gitignore

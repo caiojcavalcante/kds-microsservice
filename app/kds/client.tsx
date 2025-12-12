@@ -217,7 +217,7 @@ export function KdsClient({ currentUser }: { currentUser: CurrentUser }) {
       case "PRONTO":
         return "text-emerald-500"
       case "SAIU_ENTREGA":
-        return "text-purple-500"
+        return "text-red-500"
       case "ENTREGUE":
         return "text-blue-500"
       case "CANCELADO":
@@ -234,7 +234,7 @@ export function KdsClient({ currentUser }: { currentUser: CurrentUser }) {
       case "PRONTO":
         return "border-emerald-500/50"
       case "SAIU_ENTREGA":
-        return "border-purple-500/50"
+        return "border-red-500/50"
       case "ENTREGUE":
         return "border-blue-500/50"
       case "CANCELADO":

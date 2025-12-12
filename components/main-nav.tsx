@@ -62,7 +62,7 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
             <Link href="/" className="mr-6 flex items-center space-x-2">
               <div className="relative h-12 w-24">
                 <Image
-                  src="/logo-light.png"
+                  src="/logo-light.jpeg"
                   alt="Ferro e Fogo"
                   fill
                   className="object-contain dark:hidden"
@@ -140,7 +140,7 @@ export function MainNav({ user, profile }: { user?: SupabaseUser | null, profile
       </header>
 
       {/* Mobile Nav (Floating Bottom) */}
-      <div className="md:hidden fixed bottom-10 left-0 right-0 z-50 w-full px-4">
+      <div className={`md:hidden fixed bottom-10 left-0 right-0 z-50 w-full px-4`}>
         <nav className="w-fit mx-auto max-w-full overflow-x-auto rounded-full border bg-background/80 backdrop-blur-md shadow-lg shadow-black/20">
           <div className="flex items-center justify-center gap-1 p-2 min-w-max mx-auto">
             {visibleLinks.map((link) => {

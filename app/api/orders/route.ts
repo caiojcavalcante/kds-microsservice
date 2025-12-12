@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
       items,
       source,
       billingType,
+      encodedImage,
+      copiaecola,
+      invoiceUrl,
+      payment,
     } = body;
 
     // Se items vier como string (comum em n8n/webhooks), tenta fazer o parse
@@ -109,7 +113,6 @@ export async function POST(req: NextRequest) {
     }
     // --- DUPLICATE CHECK END ---
 
-
     const orderPayload = {
       code,
       table_number: table_number || null,
@@ -120,6 +123,10 @@ export async function POST(req: NextRequest) {
       source: source || "PDV",
       items: normalizedItems,
       billingType: billingType || null,
+      encodedImage: encodedImage || null,
+      copiaecola: copiaecola || null,
+      invoiceUrl: invoiceUrl || null,
+      payment: payment || null,
       updated_at: new Date().toISOString(),
     };
 

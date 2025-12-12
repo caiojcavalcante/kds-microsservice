@@ -138,7 +138,7 @@ export default function CardapioPage() {
           <Link href="/" className="flex items-center gap-2 flex-shrink-0">
             <div className="sm:hidden relative h-10 w-20">
               <Image
-                src="/logo-light.png" // Default light mode logo
+                src="/logo-light.jpeg" // Default light mode logo
                 alt="Ferro e Fogo"
                 fill
                 className="object-cover light-mode-logo"
@@ -156,7 +156,7 @@ export default function CardapioPage() {
           <Link href="/" className="hidden sm:flex items-center gap-2 flex-shrink-0">
             <div className="relative h-10 w-28 block sm:hidden">
               <Image
-                src="/logo-light.png" // Default light mode logo
+                src="/logo-light.jpeg" // Default light mode logo
                 alt="Ferro e Fogo"
                 fill
                 className="object-contain light-mode-logo"

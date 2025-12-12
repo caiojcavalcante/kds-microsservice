@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { AlertTriangle, CheckCircle2, Clock, Flame, Package, Settings, Search, X, Save, Trash2, Plus, Minus, ChevronDown } from "lucide-react"
+import Link from "next/link"
+import { AlertTriangle, CheckCircle2, Clock, Flame, Package, Settings, Search, X, Save, Trash2, Plus, Minus, ChevronDown, Calendar, Wallet, CreditCard, Banknote, QrCode, Printer, ChefHat, Truck, ArrowRight, TrendingUp } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { toast } from "sonner"
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cell } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Cell, Area, AreaChart } from "recharts"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { createClient } from "@/utils/supabase/client"
 import { ProductManager } from "@/components/product-manager"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 
 type OrderItem = {
   product_name: string
@@ -69,6 +71,101 @@ type Product = {
   price: number
   img: string | null
 }
+
+type CashSession = {
+  id: string
+  opened_at: string
+  closed_at: string | null
+  opened_by_id: string
+  opened_by_name: string
+  closed_by_id: string | null
+  closed_by_name: string | null
+  initial_balance: number
+  expected_cash: number | null
+  counted_cash: number | null
+  variance: number | null
+  total_sales: number
+  total_pix: number
+  total_card: number
+  total_cash_sales: number
+  order_count: number
+  notes: string | null
+  status: 'OPEN' | 'CLOSED'
+}
+
+// Stats Card Component
+function StatsCard({ title, value, icon: Icon, description, className }: { title: string, value: number | string, icon: any, description?: string, className?: string }) {
+  return (
+    <Card className={cn("bg-neutral-900 border-neutral-800 shadow-xl", className)}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium text-neutral-400">
+          {title}
+        </CardTitle>
+        <Icon className="h-4 w-4 text-amber-500" />
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold text-neutral-100">{value}</div>
+        {description && (
+          <p className="text-xs text-neutral-500 mt-1">
+            {description}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    PENDENTE: "bg-amber-500/20 text-amber-500 border-amber-500/20",
+    EM_PREPARO: "bg-orange-600/20 text-orange-500 border-orange-600/20",
+    PRONTO: "bg-emerald-500/20 text-emerald-500 border-emerald-500/20",
+    SAIU_ENTREGA: "bg-blue-500/20 text-blue-500 border-blue-500/20",
+    ENTREGUE: "bg-neutral-800 text-neutral-400 border-neutral-700",
+    CANCELADO: "bg-red-500/20 text-red-500 border-red-500/20",
+  }
+
+  const labels: Record<string, string> = {
+    PENDENTE: "Pendente",
+    EM_PREPARO: "Em Preparo",
+    PRONTO: "Pronto",
+    SAIU_ENTREGA: "Saiu p/ Entrega",
+    ENTREGUE: "Entregue",
+    CANCELADO: "Cancelado",
+  }
+
+  return (
+    <Badge variant="outline" className={cn("font-medium", styles[status] || "bg-neutral-800 text-neutral-400")}>
+      {labels[status] || status}
+    </Badge>
+  )
+}
+
+// Helper for status colors
+const getStatuslinear = (status: string) => {
+  switch (status) {
+    case 'PENDENTE': return 'from-amber-400 to-amber-600 text-white'
+    case 'EM_PREPARO': return 'from-orange-500 to-red-600 text-white'
+    case 'PRONTO': return 'from-emerald-400 to-emerald-600 text-white'
+    case 'SAIU_ENTREGA': return 'from-blue-400 to-blue-600 text-white'
+    case 'ENTREGUE': return 'from-neutral-600 to-neutral-800 text-neutral-300'
+    case 'CANCELADO': return 'from-red-600 to-red-900 text-white'
+    default: return 'from-neutral-700 to-neutral-900'
+  }
+}
+
+const formatStatus = (status: string) => {
+  const map: Record<string, string> = {
+    PENDENTE: "Pendente",
+    EM_PREPARO: "Em Preparo",
+    PRONTO: "Pronto",
+    SAIU_ENTREGA: "Saiu p/ Entrega",
+    ENTREGUE: "Entregue",
+    CANCELADO: "Cancelado",
+  }
+  return map[status] || status
+}
+
 export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[], menu: Category[] }) {
   const router = useRouter()
   const [orders, setOrders] = useState(initialOrders)
@@ -111,17 +208,11 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isPanelOpen) {
-      // Save original styles
-      const originalBodyStyle = document.body.style.overflow
-      const originalHtmlStyle = document.documentElement.style.overflow
-
-      // Prevent scrolling on both body and html
       document.body.style.overflow = 'hidden'
       document.documentElement.style.overflow = 'hidden'
-
       return () => {
-        document.body.style.overflow = originalBodyStyle
-        document.documentElement.style.overflow = originalHtmlStyle
+        document.body.style.overflow = ''
+        document.documentElement.style.overflow = ''
       }
     }
   }, [isPanelOpen])
@@ -256,7 +347,6 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
       })
     })
 
-    // Find product image from menu
     const findProductImage = (productName: string): string | null => {
       for (const category of menu) {
         const product = category.items.find(p => p.name === productName)
@@ -274,106 +364,121 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
   }, [orders])
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 bg-neutral-950 min-h-screen text-neutral-100 p-8">
 
-      <Tabs defaultValue="orders" className="space-y-4">
-        <div className="w-full mx-4 sm:mx-0 overflow-x-auto">
-          <TabsList className="inline-flex min-w-max">
-            <TabsTrigger value="orders">Pedidos</TabsTrigger>
-            <TabsTrigger value="products">Produtos</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">Painel Administrativo</h1>
+          <p className="text-neutral-400">Visão geral e operação</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10 px-3 py-1">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+            Sistema Online
+          </Badge>
+        </div>
+      </div>
+
+      <Tabs defaultValue="orders" className="space-y-6">
+        <div className="w-full overflow-x-auto pb-2">
+          <TabsList className="bg-neutral-900 border border-neutral-800 p-1 rounded-2xl h-auto inline-flex">
+            <TabsTrigger value="orders" className="rounded-xl px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black font-medium transition-all">Pedidos</TabsTrigger>
+            <TabsTrigger value="products" className="rounded-xl px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black font-medium transition-all">Produtos</TabsTrigger>
+            <TabsTrigger value="analytics" className="rounded-xl px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black font-medium transition-all">Analytics</TabsTrigger>
+            <TabsTrigger value="caixa" className="rounded-xl px-6 py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black font-medium transition-all">Caixa</TabsTrigger>
           </TabsList>
         </div>
 
-        <TabsContent value="orders" className="space-y-4">
+        <TabsContent value="orders" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatsCard
               title="Novos"
               value={stats["PENDENTE"] || 0}
               icon={Clock}
-              className="border-l-4 border-l-amber-500"
+              className="border-l-4 border-l-amber-500 bg-neutral-900/50 backdrop-blur-sm"
             />
             <StatsCard
               title="Em Preparo"
               value={stats["EM_PREPARO"] || 0}
               icon={Flame}
-              className="border-l-4 border-l-orange-500"
+              className="border-l-4 border-l-orange-500 bg-neutral-900/50 backdrop-blur-sm"
             />
             <StatsCard
               title="Prontos"
               value={stats["PRONTO"] || 0}
               icon={CheckCircle2}
-              className="border-l-4 border-l-emerald-500"
+              className="border-l-4 border-l-emerald-500 bg-neutral-900/50 backdrop-blur-sm"
             />
             <StatsCard
               title="Total (Hoje)"
               value={analytics.totalOrders}
               icon={Package}
               description="Pedidos realizados hoje"
+              className="bg-neutral-900/50 backdrop-blur-sm"
             />
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Histórico de Pedidos</CardTitle>
-              <CardDescription>
-                Clique em um pedido para editar detalhes e status
-              </CardDescription>
+          <Card className="bg-neutral-900 border-neutral-800 shadow-xl overflow-hidden">
+            <CardHeader className="bg-neutral-800/50 border-b border-neutral-800">
+              <div className="flex justify-between items-center">
+                <div>
+                  <CardTitle className="text-white">Últimos Pedidos</CardTitle>
+                  <CardDescription className="text-neutral-400">
+                    Gerencie os pedidos em tempo real
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
-            <CardContent>
-              {/* ... (Order Table - same as before) ... */}
+            <CardContent className="p-0">
               {total === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
-                  <Package className="h-12 w-12 mb-4 opacity-20" />
+                <div className="flex flex-col items-center justify-center py-24 text-neutral-600">
+                  <Package className="h-16 w-16 mb-4 opacity-20" />
                   <p>Nenhum pedido encontrado</p>
                 </div>
               ) : (
-                <div className="rounded-md border">
-                  <div className="relative w-full overflow-auto">
-                    <table className="w-full caption-bottom text-sm">
-                      <thead className="[&_tr]:border-b">
-                        <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Código</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Status</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Tipo</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Cliente</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Criado em</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Itens</th>
-                          <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground">Total</th>
+                <div className="w-full overflow-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-neutral-900/50">
+                      <tr className="border-b border-neutral-800 text-neutral-400">
+                        <th className="h-12 px-6 text-left font-medium">Código</th>
+                        <th className="h-12 px-6 text-left font-medium">Status</th>
+                        <th className="h-12 px-6 text-left font-medium">Tipo</th>
+                        <th className="h-12 px-6 text-left font-medium">Cliente</th>
+                        <th className="h-12 px-6 text-left font-medium">Horário</th>
+                        <th className="h-12 px-6 text-right font-medium">Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((order) => (
+                        <tr
+                          key={order.id}
+                          onClick={() => handleSelectOrder(order)}
+                          className="border-b border-neutral-800 transition-all hover:bg-neutral-800/50 cursor-pointer group"
+                        >
+                          <td className="p-6 font-mono font-bold text-amber-500 group-hover:text-amber-400">#{order.code}</td>
+                          <td className="p-6"><StatusBadge status={order.status} /></td>
+                          <td className="p-6">
+                            <Badge variant="outline" className="border-neutral-700 text-neutral-400 bg-neutral-800/50 text-[10px] tracking-wider uppercase">
+                              {order.service_type}
+                            </Badge>
+                          </td>
+                          <td className="p-6">
+                            <div className="flex flex-col">
+                              <span className="font-medium text-neutral-200">{order.customer_name || "Cliente Balcão"}</span>
+                              {order.table_number && <span className="text-xs text-amber-600 font-medium">Mesa {order.table_number}</span>}
+                            </div>
+                          </td>
+                          <td className="p-6 text-neutral-500 font-mono text-xs">
+                            {new Date(order.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                          </td>
+                          <td className="p-6 text-right font-bold text-emerald-500">
+                            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(order.items))}
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody className="[&_tr:last-child]:border-0">
-                        {orders.map((order) => (
-                          <tr
-                            key={order.id}
-                            onClick={() => handleSelectOrder(order)}
-                            className="border-b transition-colors hover:bg-muted/50 cursor-pointer"
-                          >
-                            <td className="p-4 align-middle font-medium">{order.code}</td>
-                            <td className="p-4 align-middle"><StatusBadge status={order.status} /></td>
-                            <td className="p-4 align-middle">
-                              <Badge variant="outline" className="text-[10px]">{order.service_type}</Badge>
-                            </td>
-                            <td className="p-4 align-middle">
-                              <div className="flex flex-col">
-                                <span className="font-medium">{order.customer_name || "—"}</span>
-                                {order.table_number && <span className="text-xs text-muted-foreground">Mesa {order.table_number}</span>}
-                              </div>
-                            </td>
-                            <td className="p-4 align-middle text-muted-foreground">
-                              {new Date(order.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
-                            </td>
-                            <td className="p-4 align-middle">
-                              <span className="text-xs text-muted-foreground">{order.items?.length || 0} itens</span>
-                            </td>
-                            <td className="p-4 align-middle font-medium text-green-600">
-                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(order.items))}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </CardContent>
@@ -385,758 +490,614 @@ export function AdminClient({ initialOrders, menu }: { initialOrders: OrderRow[]
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          {/* Premium Analytics Cards */}
           <div className="grid gap-6 md:grid-cols-3">
-            {/* Revenue Card */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/10 via-green-500/5 to-transparent border border-emerald-500/20 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-50" />
-              <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-emerald-500/10 blur-3xl" />
-              <div className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Receita Total (Hoje)</span>
-                  <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-                    <span className="text-emerald-600 font-bold text-lg">R$</span>
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(analytics.totalRevenue)}
-                </div>
+            {/* Revenue Component */}
+            <div className="relative overflow-hidden rounded-3xl bg-neutral-900 border border-neutral-800 p-8 shadow-2xl">
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <Wallet className="h-32 w-32" />
+              </div>
+              <p className="text-neutral-400 text-sm font-medium uppercase tracking-wider mb-2">Faturamento Hoje</p>
+              <h3 className="text-4xl font-bold text-white mb-2">
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(analytics.totalRevenue)}
+              </h3>
+              <div className="flex items-center text-emerald-500 text-sm mt-4">
+                <TrendingUp className="h-4 w-4 mr-1" />
+                <span>Receita acumulada</span>
               </div>
             </div>
 
-            {/* Orders Card */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/10 via-cyan-500/5 to-transparent border border-blue-500/20 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-50" />
-              <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-blue-500/10 blur-3xl" />
-              <div className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Pedidos (Hoje)</span>
-                  <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                    <Package className="h-5 w-5 text-blue-600" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                  {analytics.totalOrders}
-                </div>
+            <div className="relative overflow-hidden rounded-3xl bg-neutral-900 border border-neutral-800 p-8 shadow-2xl">
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <ChefHat className="h-32 w-32" />
+              </div>
+              <p className="text-neutral-400 text-sm font-medium uppercase tracking-wider mb-2">Pedidos Hoje</p>
+              <h3 className="text-4xl font-bold text-white mb-2">{analytics.totalOrders}</h3>
+              <div className="flex items-center text-blue-500 text-sm mt-4">
+                <TrendingUp className="h-4 w-4 mr-1" />
+                <span>Volume de Vendas</span>
               </div>
             </div>
 
-            {/* Avg Ticket Card */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/10 via-pink-500/5 to-transparent border border-purple-500/20 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-50" />
-              <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-purple-500/10 blur-3xl" />
-              <div className="relative">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Ticket Médio</span>
-                  <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                    <Flame className="h-5 w-5 text-purple-600" />
-                  </div>
-                </div>
-                <div className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(analytics.avgTicket)}
-                </div>
+            <div className="relative overflow-hidden rounded-3xl bg-neutral-900 border border-neutral-800 p-8 shadow-2xl">
+              <div className="absolute top-0 right-0 p-4 opacity-5">
+                <ArrowRight className="h-32 w-32" />
+              </div>
+              <p className="text-neutral-400 text-sm font-medium uppercase tracking-wider mb-2">Ticket Médio</p>
+              <h3 className="text-4xl font-bold text-white mb-2">
+                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(analytics.avgTicket)}
+              </h3>
+              <div className="flex items-center text-amber-500 text-sm mt-4">
+                <TrendingUp className="h-4 w-4 mr-1" />
+                <span>Performance Média</span>
               </div>
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-            {/* Chart Card */}
-            <div className="col-span-4 relative overflow-hidden rounded-2xl bg-white/50 dark:bg-neutral-900/50 border border-black/5 dark:border-white/10 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-orange-500/5 opacity-50" />
-              <div className="relative">
-                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/20">
-                    <Flame className="h-4 w-4 text-white" />
-                  </div>
-                  Vendas por Hora
-                </h3>
-                <div className="h-[300px]">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <Card className="col-span-2 bg-neutral-900 border-neutral-800 shadow-xl max-w-full">
+              <CardHeader>
+                <CardTitle className="text-white">Movimento Horário</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px] w-full max-w-full">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={analytics.chartData}>
+                    <AreaChart data={analytics.chartData}>
                       <defs>
-                        <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#ef4444" stopOpacity={1} />
-                          <stop offset="100%" stopColor="#f97316" stopOpacity={0.8} />
+                        <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
                         </linearGradient>
-                        <filter id="glow">
-                          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                          <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                          </feMerge>
-                        </filter>
                       </defs>
-                      <XAxis
-                        dataKey="name"
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                      />
-                      <YAxis
-                        stroke="#888888"
-                        fontSize={12}
-                        tickLine={false}
-                        axisLine={false}
-                        tickFormatter={(value) => `R$${value}`}
-                      />
+                      <XAxis dataKey="name" stroke="#525252" fontSize={12} tickLine={false} axisLine={false} />
                       <Tooltip
-                        contentStyle={{
-                          backgroundColor: 'rgba(0,0,0,0.8)',
-                          borderColor: 'rgba(255,255,255,0.1)',
-                          borderRadius: '12px',
-                          padding: '12px'
-                        }}
-                        itemStyle={{ color: '#fff' }}
-                        labelStyle={{ color: '#999', marginBottom: '4px' }}
-                        formatter={(value: number) => [new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value), 'Vendas']}
+                        contentStyle={{ backgroundColor: '#171717', borderColor: '#262626', borderRadius: '12px', color: '#fff' }}
                       />
-                      <Bar
-                        dataKey="Vendas"
-                        fill="url(#barGradient)"
-                        radius={[8, 8, 0, 0]}
-                        filter="url(#glow)"
-                      />
-                    </BarChart>
+                      <Area type="monotone" dataKey="Vendas" stroke="#f59e0b" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+                    </AreaChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            {/* Top Items Card */}
-            <div className="col-span-3 relative overflow-hidden rounded-2xl bg-white/50 dark:bg-neutral-900/50 border border-black/5 dark:border-white/10 p-6">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-yellow-500/5 opacity-50" />
-              <div className="relative">
-                <h3 className="text-lg font-bold mb-2 flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                    <CheckCircle2 className="h-4 w-4 text-white" />
-                  </div>
-                  Mais Vendidos
-                </h3>
-                <p className="text-sm text-neutral-500 mb-6">Top 5 itens de hoje</p>
-
+            <Card className="bg-neutral-900 border-neutral-800 shadow-xl max-w-full">
+              <CardHeader>
+                <CardTitle className="text-white">Top Produtos</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
-                  {analytics.topItems.map((item, index) => (
-                    <div key={item.name} className="flex items-center gap-4 p-3 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
-                      {/* Rank Badge */}
-                      <div className={cn(
-                        "flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold shadow-lg",
-                        index === 0 && "bg-gradient-to-br from-amber-400 to-yellow-500 text-white shadow-amber-500/30",
-                        index === 1 && "bg-gradient-to-br from-neutral-300 to-neutral-400 text-white shadow-neutral-400/30",
-                        index === 2 && "bg-gradient-to-br from-amber-600 to-orange-700 text-white shadow-amber-600/30",
-                        index > 2 && "bg-black/10 dark:bg-white/10 text-neutral-600 dark:text-neutral-400"
-                      )}>
-                        {index + 1}
+                  {analytics.topItems.map((item, idx) => (
+                    <div key={idx} className="flex items-center gap-4 p-3 rounded-xl bg-neutral-800/50 hover:bg-neutral-800 transition-colors">
+                      <div className="h-10 w-10 rounded-lg overflow-hidden bg-neutral-700 shrink-0">
+                        {item.img && <img src={item.img} className="h-full w-full object-cover" alt="" />}
                       </div>
-
-                      {/* Product Image */}
-                      <div className="h-12 w-12 rounded-xl overflow-hidden bg-gradient-to-br from-neutral-100 to-neutral-200 dark:from-neutral-800 dark:to-neutral-700 flex-shrink-0">
-                        {item.img ? (
-                          <img src={item.img} alt={item.name} className="h-full w-full object-cover" />
-                        ) : (
-                          <div className="h-full w-full flex items-center justify-center text-neutral-400">
-                            <Package className="h-5 w-5" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Product Info */}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{item.name}</p>
-                        <p className="text-xs text-neutral-500">{item.count} unidades vendidas</p>
+                        <p className="text-sm font-medium text-white truncate">{item.name}</p>
+                        <p className="text-xs text-neutral-400">{item.count} vendidos</p>
                       </div>
+                      <div className="text-lg font-bold text-amber-500">#{idx + 1}</div>
                     </div>
                   ))}
-                  {analytics.topItems.length === 0 && (
-                    <div className="text-center py-12 text-neutral-500">
-                      <Package className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                      <p className="text-sm">Nenhum dado ainda.</p>
-                    </div>
-                  )}
+                  {analytics.topItems.length === 0 && <p className="text-neutral-500 text-center py-4">Sem dados hoje</p>}
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
+        </TabsContent>
+
+        <TabsContent value="caixa" className="space-y-6">
+          <CaixaTab orders={orders} calculateOrderTotal={calculateOrderTotal} />
         </TabsContent>
       </Tabs>
 
-      {/* Edit Panel - Premium Redesign */}
+      {/* Edit Modal (Redesigned) */}
       <AnimatePresence>
         {isPanelOpen && selectedOrder && (
-          <>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={handleClosePanel}
-              className="fixed inset-0 z-50 bg-black/60 dark:bg-black/80 backdrop-blur-sm overflow-y-auto h-screen m-0"
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-8 pointer-events-none"
-              onClick={handleClosePanel}
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              className="relative w-full max-w-4xl bg-neutral-900 border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             >
-              <div
-                className="w-full max-w-[1000px] max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden bg-white dark:bg-neutral-900 border border-black/5 dark:border-white/10 pointer-events-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header */}
-                <div className="p-6 flex items-start gap-4 relative border-b border-black/5 dark:border-white/5 bg-gradient-to-r from-red-500/5 to-orange-500/5">
-                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Settings className="h-7 w-7 text-white" />
+              <div className="p-6 border-b border-neutral-800 bg-neutral-900 flex justify-between items-start z-10 shrink-0">
+                <div>
+                  <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+                    #{selectedOrder.code}
+                    <Badge variant="outline" className="text-amber-500 border-amber-500/20 bg-amber-500/10">
+                      {selectedOrder.status}
+                    </Badge>
+                  </h2>
+                  <p className="text-neutral-400 text-sm mt-1">{selectedOrder.customer_name || "Cliente Balcão"} • Mesa {selectedOrder.table_number || "—"}</p>
+                </div>
+                <Button variant="ghost" size="icon" onClick={handleClosePanel} className="text-neutral-400 hover:text-white">
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                {/* Status Controls */}
+                <div className="space-y-4">
+                  <Label className="uppercase text-xs font-bold text-neutral-500 tracking-wider">Status do Pedido</Label>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {["PENDENTE", "EM_PREPARO", "PRONTO", "SAIU_ENTREGA", "ENTREGUE", "CANCELADO"].map(status => (
+                      <button
+                        key={status}
+                        onClick={() => setEditForm(prev => ({ ...prev, status }))}
+                        className={cn(
+                          "py-2 px-1 rounded-lg text-xs font-medium border transition-all",
+                          editForm.status === status
+                            ? `border-transparent ${getStatuslinear(status)} shadow-lg`
+                            : "border-neutral-800 bg-neutral-800/50 text-neutral-400 hover:bg-neutral-800"
+                        )}
+                      >
+                        {formatStatus(status)}
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex-1">
-                    <h2 className="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                      Editar Pedido
-                    </h2>
-                    <div className="flex items-center gap-3 mt-1">
-                      <span className="text-lg font-bold text-red-600">#{selectedOrder.code}</span>
-                      <Badge variant="outline" className="text-xs">{selectedOrder.service_type}</Badge>
-                      <Badge variant="outline" className="text-xs">{selectedOrder.source}</Badge>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleClosePanel}
-                    className="absolute top-4 right-4 p-2 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 rounded-full transition-colors"
-                  >
-                    <X className="h-6 w-6" />
-                  </button>
                 </div>
 
-                {/* Body */}
-                <div
-                  className="flex-1 overflow-y-auto p-6 space-y-8 overscroll-contain"
-                  onWheel={(e) => e.stopPropagation()}
-                >
-                  {/* Status Section */}
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* Left Col: Items */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wide flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                        <Clock className="h-4 w-4 text-amber-500" />
-                      </div>
-                      Status do Pedido
-                    </h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      {["PENDENTE", "EM_PREPARO", "PRONTO", "SAIU_ENTREGA", "ENTREGUE", "CANCELADO"].map(status => (
-                        <button
-                          key={status}
-                          onClick={() => setEditForm(prev => ({ ...prev, status }))}
-                          className={cn(
-                            "p-3 rounded-xl text-sm font-medium transition-all border",
-                            editForm.status === status
-                              ? "bg-gradient-to-br shadow-lg border-transparent " + getStatusGradient(status)
-                              : "bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 hover:bg-black/10 dark:hover:bg-white/10"
-                          )}
-                        >
-                          {formatStatus(status)}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Payment Section */}
-                  <div className="p-5 bg-gradient-to-br from-emerald-500/5 to-green-500/5 rounded-2xl border border-emerald-500/20 space-y-4">
-                    <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wide flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      </div>
-                      Pagamento
-                    </h3>
-                    <p className="text-xs text-neutral-500">Desconto no pedido não é refletido no valor final, esta é apenas para fins de cálculo pois apenas guardamos os itens no pedido e nao o valor total.<br />O pagamento deve ser concluido manualmente</p>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Status Pagamento</Label>
-                        <div className="flex flex-wrap gap-1">
-                          {[
-                            { value: "PENDING", label: "Pendente" },
-                            { value: "PAYMENT_RECEIVED", label: "Pago" },
-                            { value: "PAYMENT_CREATED", label: "Cobrança" },
-                          ].map(opt => (
-                            <button
-                              key={opt.value}
-                              onClick={() => setEditForm(prev => ({ ...prev, payment_status: opt.value }))}
-                              className={cn(
-                                "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                                editForm.payment_status === opt.value
-                                  ? "bg-emerald-500 text-white"
-                                  : "bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15"
-                              )}
-                            >
-                              {opt.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Tipo de Cobrança</Label>
-                        <div className="flex flex-wrap gap-1">
-                          {[
-                            { value: "PIX", label: "PIX" },
-                            { value: "CREDIT_CARD", label: "Cartão" },
-                            { value: "MAQUININHA", label: "Maquininha" },
-                            { value: "DINHEIRO", label: "Dinheiro" },
-                          ].map(opt => (
-                            <button
-                              key={opt.value}
-                              onClick={() => setEditForm(prev => ({ ...prev, billingType: opt.value }))}
-                              className={cn(
-                                "px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                                editForm.billingType === opt.value
-                                  ? "bg-blue-500 text-white"
-                                  : "bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15"
-                              )}
-                            >
-                              {opt.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Subtotal (calculado)</Label>
-                        <div className="h-12 rounded-xl bg-black/5 dark:bg-white/5 flex items-center px-4 text-lg font-bold text-neutral-600 dark:text-neutral-300">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(editForm.items || []))}
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Desconto</Label>
-                        <div className="flex gap-2">
-                          {/* Toggle R$ / % */}
-                          <div className="flex bg-black/5 dark:bg-white/5 rounded-xl p-1">
-                            <button
-                              onClick={() => setDiscountType('absolute')}
-                              className={cn(
-                                "px-3 py-2 rounded-lg text-sm font-bold transition-all",
-                                discountType === 'absolute'
-                                  ? "bg-red-500 text-white shadow"
-                                  : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-                              )}
-                            >
-                              R$
-                            </button>
-                            <button
-                              onClick={() => setDiscountType('percent')}
-                              className={cn(
-                                "px-3 py-2 rounded-lg text-sm font-bold transition-all",
-                                discountType === 'percent'
-                                  ? "bg-red-500 text-white shadow"
-                                  : "text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-                              )}
-                            >
-                              %
-                            </button>
-                          </div>
-                          <Input
-                            type="number"
-                            step={discountType === 'percent' ? "1" : "0.01"}
-                            min="0"
-                            max={discountType === 'percent' ? "100" : undefined}
-                            value={(editForm as any).discount || ""}
-                            onChange={e => setEditForm(prev => ({ ...prev, discount: parseFloat(e.target.value) || 0 } as any))}
-                            className="h-12 rounded-xl text-lg font-bold text-red-500 flex-1"
-                            placeholder={discountType === 'percent' ? "0%" : "0,00"}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-4 bg-gradient-to-r from-emerald-500/10 to-green-500/10 rounded-xl mt-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-neutral-600 dark:text-neutral-300">Total Final</span>
-                        <span className="text-2xl font-bold text-emerald-600">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-                            (() => {
-                              const subtotal = calculateOrderTotal(editForm.items || [])
-                              const discountValue = (editForm as any).discount || 0
-                              if (discountType === 'percent') {
-                                return Math.max(0, subtotal - (subtotal * discountValue / 100))
-                              }
-                              return Math.max(0, subtotal - discountValue)
-                            })()
-                          )}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Client Info Section */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wide flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                        <Package className="h-4 w-4 text-blue-500" />
-                      </div>
-                      Cliente & Serviço
-                    </h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Nome do Cliente</Label>
-                        <Input
-                          value={editForm.customer_name || ""}
-                          onChange={e => setEditForm(prev => ({ ...prev, customer_name: e.target.value }))}
-                          className="h-10 rounded-xl"
-                          placeholder="Nome"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Telefone</Label>
-                        <Input
-                          value={editForm.customer_phone || ""}
-                          onChange={e => setEditForm(prev => ({ ...prev, customer_phone: e.target.value }))}
-                          className="h-10 rounded-xl"
-                          placeholder="(00) 00000-0000"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Mesa</Label>
-                        <Input
-                          value={editForm.table_number || ""}
-                          onChange={e => setEditForm(prev => ({ ...prev, table_number: e.target.value }))}
-                          className="h-10 rounded-xl"
-                          placeholder="Número da mesa"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs text-neutral-500">Tipo de Serviço</Label>
-                        <div className="flex gap-1">
-                          {[
-                            { value: "MESA", label: "Mesa" },
-                            { value: "DELIVERY", label: "Delivery" },
-                            { value: "BALCAO", label: "Balcão" },
-                          ].map(opt => (
-                            <button
-                              key={opt.value}
-                              onClick={() => setEditForm(prev => ({ ...prev, service_type: opt.value }))}
-                              className={cn(
-                                "flex-1 px-3 py-2 rounded-xl text-sm font-medium transition-all",
-                                editForm.service_type === opt.value
-                                  ? "bg-purple-500 text-white shadow"
-                                  : "bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15"
-                              )}
-                            >
-                              {opt.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-neutral-500">Observações</Label>
-                      <Textarea
-                        value={editForm.obs || ""}
-                        onChange={e => setEditForm(prev => ({ ...prev, obs: e.target.value }))}
-                        className="rounded-xl resize-none"
-                        rows={2}
-                        placeholder="Observações do pedido..."
-                      />
-                    </div>
-                  </div>
-
-                  {/* Motoboy Section */}
-                  {(editForm.service_type === "DELIVERY" || editForm.motoboy_name) && (
-                    <div className="p-5 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-2xl border border-purple-500/20 space-y-4">
-                      <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wide flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                          <Package className="h-4 w-4 text-purple-500" />
-                        </div>
-                        Motoboy / Entrega
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-xs text-neutral-500">Nome do Motoboy</Label>
-                          <Input
-                            value={editForm.motoboy_name || ""}
-                            onChange={e => setEditForm(prev => ({ ...prev, motoboy_name: e.target.value }))}
-                            className="h-10 rounded-xl"
-                            placeholder="Nome"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-xs text-neutral-500">Telefone Motoboy</Label>
-                          <Input
-                            value={editForm.motoboy_phone || ""}
-                            onChange={e => setEditForm(prev => ({ ...prev, motoboy_phone: e.target.value }))}
-                            className="h-10 rounded-xl"
-                            placeholder="(00) 00000-0000"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Delivery Signature Section */}
-                  {(editForm.delivered_by_name || editForm.delivered_at) && (
-                    <div className="p-5 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 rounded-2xl border border-blue-500/20 space-y-4">
-                      <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wide flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                          <CheckCircle2 className="h-4 w-4 text-blue-500" />
-                        </div>
-                        Assinatura de Entrega
-                      </h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="p-3 bg-white/50 dark:bg-black/20 rounded-xl">
-                          <p className="text-xs text-neutral-500">Entregue por</p>
-                          <p className="font-bold text-neutral-900 dark:text-white">{editForm.delivered_by_name || "—"}</p>
-                        </div>
-                        <div className="p-3 bg-white/50 dark:bg-black/20 rounded-xl">
-                          <p className="text-xs text-neutral-500">Data/Hora</p>
-                          <p className="font-bold text-neutral-900 dark:text-white">
-                            {editForm.delivered_at ? new Date(editForm.delivered_at).toLocaleString("pt-BR") : "—"}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Items Section */}
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-sm font-bold text-neutral-900 dark:text-white uppercase tracking-wide flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                          <Flame className="h-4 w-4 text-orange-500" />
-                        </div>
-                        Itens do Pedido
-                      </h3>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsAddingItem(!isAddingItem)}
-                        className="rounded-xl"
-                      >
-                        <Plus className="h-4 w-4 mr-2" /> Adicionar
+                    <div className="flex items-center justify-between">
+                      <Label className="uppercase text-xs font-bold text-neutral-500 tracking-wider">Itens do Pedido</Label>
+                      <Button size="sm" variant="ghost" className="text-amber-500 hover:bg-amber-500/10 h-8" onClick={() => setIsAddingItem(!isAddingItem)}>
+                        <Plus className="h-4 w-4 mr-1" /> Adicionar
                       </Button>
                     </div>
 
                     {isAddingItem && (
-                      <div className="p-4 border rounded-2xl bg-black/5 dark:bg-white/5 space-y-3">
-                        <div className="relative">
-                          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            placeholder="Buscar produto..."
-                            className="pl-9 h-10 rounded-xl"
-                            value={itemSearch}
-                            onChange={e => setItemSearch(e.target.value)}
-                            autoFocus
-                          />
-                          {filteredProducts.length > 0 && (
-                            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-neutral-800 border rounded-xl shadow-lg max-h-[200px] overflow-y-auto z-10">
-                              {filteredProducts.map(product => (
-                                <div
-                                  key={product.id}
-                                  className="p-3 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer flex justify-between items-center"
-                                  onClick={() => handleAddItem(product)}
-                                >
-                                  <span className="font-medium">{product.name}</span>
-                                  <span className="text-emerald-600 font-bold">
-                                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(product.price)}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                      <div className="p-3 bg-neutral-800 rounded-xl space-y-3 border border-neutral-700">
+                        <Input
+                          placeholder="Buscar produto..."
+                          className="bg-neutral-900 border-neutral-700 text-white"
+                          value={itemSearch}
+                          onChange={e => setItemSearch(e.target.value)}
+                          autoFocus
+                        />
+                        {filteredProducts.length > 0 && (
+                          <div className="max-h-40 overflow-y-auto space-y-1">
+                            {filteredProducts.map(p => (
+                              <div key={p.id} onClick={() => handleAddItem(p)} className="p-2 hover:bg-neutral-700 rounded-lg cursor-pointer flex justify-between text-sm text-neutral-300">
+                                <span>{p.name}</span>
+                                <span className="text-emerald-500 font-bold">R${p.price.toFixed(2)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
 
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {editForm.items?.map((item, idx) => (
-                        <div key={idx} className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
-                          <div className="flex flex-wrap gap-3 items-center">
-                            {/* Product Name */}
-                            <span className="font-medium text-neutral-900 dark:text-white flex-1 min-w-[150px]">{item.product_name}</span>
-
-                            {/* Controls Row */}
-                            <div className="flex items-center gap-3 flex-wrap">
-                              {/* Quantity Controls */}
-                              <div className="flex items-center bg-white dark:bg-black/20 rounded-xl border border-black/10 dark:border-white/10">
-                                <button
-                                  onClick={() => {
-                                    if (item.quantity <= 1) {
-                                      const newItems = [...(editForm.items || [])]
-                                      newItems.splice(idx, 1)
-                                      setEditForm(prev => ({ ...prev, items: newItems }))
-                                    } else {
-                                      const newItems = [...(editForm.items || [])]
-                                      newItems[idx] = { ...newItems[idx], quantity: newItems[idx].quantity - 1 }
-                                      setEditForm(prev => ({ ...prev, items: newItems }))
-                                    }
-                                  }}
-                                  className="h-8 w-8 flex items-center justify-center text-red-500 hover:bg-red-500/10 rounded-l-xl transition-colors"
-                                >
-                                  <Minus className="h-4 w-4" />
-                                </button>
-                                <span className="w-10 text-center font-bold text-neutral-900 dark:text-white">{item.quantity}</span>
-                                <button
-                                  onClick={() => {
-                                    const newItems = [...(editForm.items || [])]
-                                    newItems[idx] = { ...newItems[idx], quantity: newItems[idx].quantity + 1 }
-                                    setEditForm(prev => ({ ...prev, items: newItems }))
-                                  }}
-                                  className="h-8 w-8 flex items-center justify-center text-emerald-500 hover:bg-emerald-500/10 rounded-r-xl transition-colors"
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </button>
-                              </div>
-
-                              {/* Price */}
-                              <span className="font-bold text-emerald-600 min-w-[80px] text-right">
-                                {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((item.price || 0) * item.quantity)}
-                              </span>
-
-                              {/* Delete */}
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-destructive hover:bg-destructive/10 rounded-lg flex-shrink-0"
-                                onClick={() => {
-                                  const newItems = [...(editForm.items || [])]
-                                  newItems.splice(idx, 1)
-                                  setEditForm(prev => ({ ...prev, items: newItems }))
-                                }}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                        <div key={idx} className="flex items-center justify-between p-3 bg-neutral-800/30 border border-neutral-800 rounded-xl group hover:border-neutral-700 transition-colors">
+                          <div className="flex items-center gap-3">
+                            <div className="flex flex-col items-center bg-neutral-800 rounded-lg border border-neutral-700 overflow-hidden">
+                              <button className="h-5 w-8 flex items-center justify-center hover:bg-neutral-700 text-neutral-400" onClick={() => {
+                                const newItems = [...(editForm.items || [])]
+                                newItems[idx].quantity++
+                                setEditForm(prev => ({ ...prev, items: newItems }))
+                              }}><Plus className="h-3 w-3" /></button>
+                              <span className="text-xs font-bold text-white py-0.5">{item.quantity}</span>
+                              <button className="h-5 w-8 flex items-center justify-center hover:bg-neutral-700 text-neutral-400" onClick={() => {
+                                const newItems = [...(editForm.items || [])];
+                                if (newItems[idx].quantity > 1) { newItems[idx].quantity--; }
+                                else { newItems.splice(idx, 1); }
+                                setEditForm(prev => ({ ...prev, items: newItems }))
+                              }}><Minus className="h-3 w-3" /></button>
+                            </div>
+                            <div>
+                              <p className="font-medium text-neutral-200">{item.product_name}</p>
+                              {item.notes && <p className="text-xs text-neutral-500">{item.notes}</p>}
                             </div>
                           </div>
-                          {item.notes && (
-                            <p className="text-sm text-neutral-500 mt-2">{item.notes}</p>
-                          )}
+                          <div className="text-right">
+                            <p className="font-bold text-emerald-500">
+                              {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((item.price || 0) * item.quantity)}
+                            </p>
+                            <button onClick={() => {
+                              const newItems = [...(editForm.items || [])];
+                              newItems.splice(idx, 1);
+                              setEditForm(prev => ({ ...prev, items: newItems }))
+                            }} className="text-xs text-red-500 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">Remover</button>
+                          </div>
                         </div>
                       ))}
-                      {(!editForm.items || editForm.items.length === 0) && (
-                        <p className="text-sm text-muted-foreground text-center py-8">
-                          Nenhum item neste pedido.
-                        </p>
-                      )}
+                      {(!editForm.items || editForm.items.length === 0) && <p className="text-neutral-500 text-sm text-center py-4">Nenhum item</p>}
                     </div>
 
-                    {/* Total */}
-                    <div className="flex justify-end p-4 bg-gradient-to-r from-emerald-500/10 to-green-500/10 rounded-2xl">
-                      <div className="text-right">
-                        <p className="text-xs text-neutral-500 uppercase tracking-wide">Total do Pedido</p>
-                        <p className="text-3xl font-bold text-emerald-600">
-                          {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(editForm.items || []))}
-                        </p>
+                    <div className="flex justify-between items-center pt-4 border-t border-neutral-800">
+                      <span className="text-neutral-400 font-medium">Total</span>
+                      <span className="text-2xl font-bold text-emerald-500">
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(calculateOrderTotal(editForm.items || []))}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right Col: Details */}
+                  <div className="space-y-6">
+                    <div className="p-5 bg-neutral-800/30 rounded-2xl border border-neutral-800 space-y-4">
+                      <Label className="uppercase text-xs font-bold text-neutral-500 tracking-wider flex items-center gap-2"><Settings className="h-3 w-3" /> Detalhes do Cliente</Label>
+                      <div className="space-y-3">
+                        <Input
+                          placeholder="Nome do Cliente"
+                          value={editForm.customer_name || ''}
+                          onChange={e => setEditForm(prev => ({ ...prev, customer_name: e.target.value }))}
+                          className="bg-neutral-900 border-neutral-800 text-white"
+                        />
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input
+                            placeholder="Telefone"
+                            value={editForm.customer_phone || ''}
+                            onChange={e => setEditForm(prev => ({ ...prev, customer_phone: e.target.value }))}
+                            className="bg-neutral-900 border-neutral-800 text-white"
+                          />
+                          <Input
+                            placeholder="Mesa"
+                            value={editForm.table_number || ''}
+                            onChange={e => setEditForm(prev => ({ ...prev, table_number: e.target.value }))}
+                            className="bg-neutral-900 border-neutral-800 text-white"
+                          />
+                        </div>
+                        <Textarea
+                          placeholder="Observações"
+                          value={editForm.obs || ''}
+                          onChange={e => setEditForm(prev => ({ ...prev, obs: e.target.value }))}
+                          className="bg-neutral-900 border-neutral-800 text-white resize-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="p-5 bg-neutral-800/30 rounded-2xl border border-neutral-800 space-y-4">
+                      <Label className="uppercase text-xs font-bold text-neutral-500 tracking-wider flex items-center gap-2"><CreditCard className="h-3 w-3" /> Pagamento</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {["PIX", "CREDIT_CARD", "MAQUININHA", "DINHEIRO"].map(type => (
+                          <button
+                            key={type}
+                            onClick={() => setEditForm(prev => ({ ...prev, billingType: type }))}
+                            className={cn(
+                              "px-3 py-2 text-xs font-medium rounded-lg border transition-all text-center",
+                              editForm.billingType === type ? "bg-amber-500/20 border-amber-500/50 text-amber-500" : "bg-neutral-900 border-neutral-800 text-neutral-400 hover:bg-neutral-800"
+                            )}
+                          >
+                            {type === 'CREDIT_CARD' ? 'CARTÃO' : type}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 p-3 bg-neutral-900 rounded-xl border border-neutral-800">
+                        <div className={`h-3 w-3 rounded-full ${editForm.payment_status === 'PAYMENT_RECEIVED' ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                        <span className="text-xs font-medium text-neutral-300">
+                          {editForm.payment_status === 'PAYMENT_RECEIVED' ? 'PAGO' : 'PENDENTE DE PAGAMENTO'}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Footer */}
-                <div className="p-6 bg-neutral-100/50 dark:bg-black/20 border-t border-black/5 dark:border-white/5 flex justify-between items-center gap-4 backdrop-blur-md">
+              <div className="p-6 border-t border-neutral-800 bg-neutral-900 flex justify-between items-center">
+                <Button variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={handleDelete} disabled={isLoading}>
+                  <Trash2 className="h-4 w-4 mr-2" /> Excluir Pedido
+                </Button>
+                <div className="flex gap-4">
+                  <Button variant="outline" onClick={handleClosePanel} className="border-neutral-700 text-neutral-300 hover:bg-neutral-800">Cancelar</Button>
                   <Button
-                    variant="outline"
-                    className="rounded-xl border-red-500/30 text-red-600 hover:bg-red-500/10 hover:border-red-500/50"
-                    onClick={handleDelete}
+                    onClick={handleSave}
                     disabled={isLoading}
+                    className="bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white border-0 shadow-lg shadow-amber-500/20"
                   >
-                    <Trash2 className="mr-2 h-4 w-4" /> Excluir
+                    <Save className="h-4 w-4 mr-2" /> Salvar Alterações
                   </Button>
-                  <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      onClick={handleClosePanel}
-                      disabled={isLoading}
-                      className="rounded-xl"
-                    >
-                      Cancelar
-                    </Button>
-                    <Button
-                      onClick={handleSave}
-                      disabled={isLoading}
-                      className="rounded-xl bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white shadow-lg"
-                    >
-                      {isLoading ? "Salvando..." : (
-                        <>
-                          <Save className="mr-2 h-4 w-4" /> Salvar Alterações
-                        </>
-                      )}
-                    </Button>
-                  </div>
                 </div>
               </div>
+
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
-    </div >
+    </div>
   )
 }
 
-// ... (StatsCard, StatusBadge, getStatusColor, formatStatus - keep as is)
+function CaixaTab({ orders, calculateOrderTotal }: { orders: OrderRow[], calculateOrderTotal: (items: OrderItem[] | null) => number }) {
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  })
+  const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'pending'>('all')
 
-function StatsCard({
-  title,
-  value,
-  icon: Icon,
-  description,
-  className,
-}: {
-  title: string
-  value: number
-  icon: any
-  description?: string
-  className?: string
-}) {
+  const [currentSession, setCurrentSession] = useState<CashSession | null>(null)
+  const [sessionLoading, setSessionLoading] = useState(true)
+  const [showOpenModal, setShowOpenModal] = useState(false)
+  const [showCloseModal, setShowCloseModal] = useState(false)
+
+  const [initialBalance, setInitialBalance] = useState("")
+  const [countedCash, setCountedCash] = useState("")
+  const [closeNotes, setCloseNotes] = useState("")
+  const [operatorName, setOperatorName] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Payment modal state
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [payingOrder, setPayingOrder] = useState<OrderRow | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'PIX' | 'CREDIT_CARD' | 'MAQUININHA' | 'DINHEIRO'>('DINHEIRO')
+  const [receivedAmount, setReceivedAmount] = useState("")
+  const [paymentProcessing, setPaymentProcessing] = useState(false)
+
+  useEffect(() => {
+    fetchCurrentSession()
+  }, [])
+
+  async function fetchCurrentSession() {
+    setSessionLoading(true)
+    try {
+      const res = await fetch("/api/caixa?current=true")
+      const data = await res.json()
+      setCurrentSession(data)
+    } catch (err) {
+      console.error("Error fetching session:", err)
+    } finally {
+      setSessionLoading(false)
+    }
+  }
+
+  const caixaData = useMemo(() => {
+    const dateStart = new Date(selectedDate + 'T00:00:00')
+    const dateEnd = new Date(selectedDate + 'T23:59:59')
+
+    const dayOrders = orders.filter(o => {
+      const orderDate = new Date(o.created_at)
+      return orderDate >= dateStart && orderDate <= dateEnd && o.status !== 'CANCELADO'
+    })
+
+    const isPaid = (o: OrderRow) => {
+      const paidStatuses = ['PAYMENT_RECEIVED', 'PAGO', 'RECEIVED', 'CONFIRMED']
+      return paidStatuses.includes(o.payment_status?.toUpperCase() || '')
+    }
+
+    const paidOrders = dayOrders.filter(isPaid)
+    const pendingOrders = dayOrders.filter(o => !isPaid(o))
+
+    const totalRevenue = dayOrders.reduce((acc, o) => acc + (o.total || calculateOrderTotal(o.items)), 0)
+    const paidRevenue = paidOrders.reduce((acc, o) => acc + (o.total || calculateOrderTotal(o.items)), 0)
+    const pendingRevenue = pendingOrders.reduce((acc, o) => acc + (o.total || calculateOrderTotal(o.items)), 0)
+
+    const paymentMethods: Record<string, { count: number; total: number }> = {
+      PIX: { count: 0, total: 0 },
+      CREDIT_CARD: { count: 0, total: 0 },
+      MAQUININHA: { count: 0, total: 0 },
+      DINHEIRO: { count: 0, total: 0 },
+    }
+
+    dayOrders.forEach(o => {
+      const method = o.billingType?.toUpperCase() || 'DINHEIRO'
+      const orderTotal = o.total || calculateOrderTotal(o.items)
+      if (paymentMethods[method]) {
+        paymentMethods[method].count += 1
+        paymentMethods[method].total += orderTotal
+      } else {
+        paymentMethods.DINHEIRO.count += 1
+        paymentMethods.DINHEIRO.total += orderTotal
+      }
+    })
+
+    let filteredOrders = dayOrders
+    if (paymentFilter === 'paid') filteredOrders = paidOrders
+    if (paymentFilter === 'pending') filteredOrders = pendingOrders
+
+    return {
+      dayOrders,
+      paidOrders,
+      pendingOrders,
+      totalRevenue,
+      paidRevenue,
+      pendingRevenue,
+      paymentMethods,
+      filteredOrders,
+      isPaid,
+    }
+  }, [orders, selectedDate, paymentFilter, calculateOrderTotal])
+
+  async function handleOpenCaixa() {
+    if (!operatorName.trim()) { toast.error("Informe o nome"); return }
+    setIsSubmitting(true)
+    try {
+      const res = await fetch("/api/caixa", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ initial_balance: parseFloat(initialBalance) || 0, opened_by_name: operatorName.trim() })
+      })
+      if (!res.ok) throw new Error("Erro ao abrir caixa")
+      setCurrentSession(await res.json())
+      setShowOpenModal(false); setInitialBalance(""); setOperatorName(""); toast.success("Caixa aberto!")
+    } catch { toast.error("Erro ao abrir caixa") } finally { setIsSubmitting(false) }
+  }
+
+  async function handleCloseCaixa() {
+    if (!currentSession) return
+    if (!countedCash.trim() || !operatorName.trim()) { toast.error("Preencha todos os campos"); return }
+    setIsSubmitting(true)
+    try {
+      const res = await fetch(`/api/caixa/${currentSession.id}`, {
+        method: "PATCH", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          counted_cash: parseFloat(countedCash) || 0, closed_by_name: operatorName.trim(), notes: closeNotes,
+          total_sales: caixaData.totalRevenue, total_pix: caixaData.paymentMethods.PIX.total,
+          total_card: caixaData.paymentMethods.CREDIT_CARD.total + caixaData.paymentMethods.MAQUININHA.total,
+          total_cash_sales: caixaData.paymentMethods.DINHEIRO.total, order_count: caixaData.dayOrders.length
+        })
+      })
+      if (!res.ok) throw new Error("Erro ao fechar")
+      setCurrentSession(null); setShowCloseModal(false); setCountedCash(""); setOperatorName(""); toast.success("Caixa fechado!")
+    } catch { toast.error("Erro ao fechar") } finally { setIsSubmitting(false) }
+  }
+
+  function openPaymentModal(order: OrderRow) {
+    setPayingOrder(order); setPaymentMethod('DINHEIRO'); setReceivedAmount(""); setShowPaymentModal(true);
+  }
+
+  async function handleProcessPayment() {
+    if (!payingOrder) return
+    setPaymentProcessing(true)
+    try {
+      const res = await fetch(`/api/orders/${payingOrder.id}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payment_status: "PAYMENT_RECEIVED", billingType: paymentMethod, total: payingOrder.total || calculateOrderTotal(payingOrder.items) })
+      })
+      if (!res.ok) throw new Error("Erro")
+      toast.success("Pagamento confirmado!")
+      window.location.reload()
+    } catch { toast.error("Erro ao confirmar") } finally { setPaymentProcessing(false) }
+  }
+
+  const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val)
+
   return (
-    <Card className={className}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <Icon className="h-4 w-4 text-muted-foreground" />
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      {/* Session Banner */}
+      {sessionLoading ? <div className="h-24 rounded-2xl bg-neutral-900 animate-pulse border border-neutral-800" /> : currentSession ? (
+        <div className="rounded-2xl bg-linear-to-r from-emerald-900/40 to-neutral-900 border border-emerald-500/20 p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-emerald-500/20 flex items-center justify-center"><CheckCircle2 className="h-6 w-6 text-emerald-500" /></div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Caixa Aberto</h3>
+              <p className="text-neutral-400 text-sm">Operador: {currentSession.opened_by_name} • Fundo: {formatCurrency(currentSession.initial_balance)}</p>
+            </div>
+          </div>
+          <Button variant="destructive" onClick={() => setShowCloseModal(true)} className="bg-red-600 hover:bg-red-700 text-white">Fechar Caixa</Button>
+        </div>
+      ) : (
+        <div className="rounded-2xl bg-linear-to-r from-amber-900/40 to-neutral-900 border border-amber-500/20 p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-xl bg-amber-500/20 flex items-center justify-center"><AlertTriangle className="h-6 w-6 text-amber-500" /></div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Caixa Fechado</h3>
+              <p className="text-neutral-400 text-sm">Abra o caixa para iniciar as operações</p>
+            </div>
+          </div>
+          <Button onClick={() => setShowOpenModal(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white">Abrir Caixa</Button>
+        </div>
+      )}
+
+      {/* Date Filter & Summary */}
+      <div className="grid md:grid-cols-4 gap-4">
+        <Card className="md:col-span-1 bg-neutral-900 border-neutral-800">
+          <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-neutral-400">Data</CardTitle></CardHeader>
+          <CardContent>
+            <Input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="bg-neutral-800 border-neutral-700 text-white" />
+          </CardContent>
+        </Card>
+        <StatsCard title="Total" value={formatCurrency(caixaData.totalRevenue)} icon={Wallet} className="bg-neutral-900 border-neutral-800" />
+        <StatsCard title="Em Dinheiro" value={formatCurrency(caixaData.paymentMethods.DINHEIRO.total)} icon={Banknote} className="bg-neutral-900 border-neutral-800" />
+        <StatsCard title="Pix/Cartão" value={formatCurrency(caixaData.totalRevenue - caixaData.paymentMethods.DINHEIRO.total)} icon={CreditCard} className="bg-neutral-900 border-neutral-800" />
+      </div>
+
+      {/* Orders Table */}
+      <Card className="bg-neutral-900 border-neutral-800">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-white">Movimentação do Dia</CardTitle>
+            <div className="flex gap-2 text-xs">
+              {['all', 'paid', 'pending'].map(f => (
+                <button key={f} onClick={() => setPaymentFilter(f as any)} className={cn("px-3 py-1 rounded-lg border transition-all", paymentFilter === f ? "bg-amber-500/20 text-amber-500 border-amber-500/50" : "border-neutral-800 text-neutral-400")}>
+                  {f === 'all' ? 'Todos' : f === 'paid' ? 'Pagos' : 'Pendentes'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-neutral-800/50 text-neutral-400">
+                <tr>
+                  <th className="p-4">Pedido</th>
+                  <th className="p-4">Hora</th>
+                  <th className="p-4">Cliente</th>
+                  <th className="p-4">Tipo Pag.</th>
+                  <th className="p-4 text-right">Valor</th>
+                  <th className="p-4 text-center">Status</th>
+                  <th className="p-4 text-center">Ação</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-neutral-800">
+                {caixaData.filteredOrders.map(order => (
+                  <tr key={order.id} className="hover:bg-neutral-800/30">
+                    <td className="p-4 font-mono text-amber-500">#{order.code}</td>
+                    <td className="p-4 text-neutral-500">{new Date(order.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</td>
+                    <td className="p-4 font-medium text-neutral-300">{order.customer_name || '—'}</td>
+                    <td className="p-4 text-neutral-400">{order.billingType}</td>
+                    <td className="p-4 text-right font-bold text-emerald-500">{formatCurrency(order.total || calculateOrderTotal(order.items))}</td>
+                    <td className="p-4 text-center">
+                      {caixaData.isPaid(order) ? (
+                        <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Pago</Badge>
+                      ) : (
+                        <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">Pendente</Badge>
+                      )}
+                    </td>
+                    <td className="p-4 text-center">
+                      {!caixaData.isPaid(order) && (
+                        <Button size="sm" onClick={() => openPaymentModal(order)} className="h-7 text-xs bg-emerald-600 hover:bg-emerald-700">Receber</Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {caixaData.filteredOrders.length === 0 && (
+                  <tr><td colSpan={7} className="p-8 text-center text-neutral-500">Nenhum movimento</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Modals for Open/Close/Payment */}
+      <Dialog open={showOpenModal} onOpenChange={setShowOpenModal}>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+          <DialogHeader><DialogTitle>Abrir Caixa</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2"><Label>Operador</Label><Input value={operatorName} onChange={e => setOperatorName(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+            <div className="space-y-2"><Label>Fundo de Caixa (R$)</Label><Input type="number" value={initialBalance} onChange={e => setInitialBalance(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+          </div>
+          <DialogFooter><Button onClick={handleOpenCaixa} disabled={isSubmitting} className="bg-emerald-600 text-white">Confirmar Abertura</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showCloseModal} onOpenChange={setShowCloseModal}>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+          <DialogHeader><DialogTitle>Fechar Caixa</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2"><Label>Operador</Label><Input value={operatorName} onChange={e => setOperatorName(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+            <div className="space-y-2"><Label>Valor em Gaveta (Dinheiro)</Label><Input type="number" value={countedCash} onChange={e => setCountedCash(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+            <div className="space-y-2"><Label>Observações</Label><Textarea value={closeNotes} onChange={e => setCloseNotes(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+          </div>
+          <DialogFooter><Button onClick={handleCloseCaixa} disabled={isSubmitting} variant="destructive">Confirmar Fechamento</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="bg-neutral-900 border-neutral-800 text-white">
+          <DialogHeader><DialogTitle>Receber Pagamento</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-2xl font-bold text-center text-emerald-500">{payingOrder && formatCurrency(payingOrder.total || calculateOrderTotal(payingOrder.items))}</p>
+            <div className="grid grid-cols-2 gap-2">
+              {['DINHEIRO', 'PIX', 'CREDIT_CARD', 'MAQUININHA'].map(m => (
+                <Button key={m} variant={paymentMethod === m ? 'default' : 'outline'} onClick={() => setPaymentMethod(m as any)} className={cn(paymentMethod === m ? "bg-amber-500 text-black hover:bg-amber-600" : "bg-transparent border-neutral-700 text-neutral-300")}>{m}</Button>
+              ))}
+            </div>
+            {paymentMethod === 'DINHEIRO' && (
+              <div className="space-y-2"><Label>Valor Recebido</Label><Input type="number" value={receivedAmount} onChange={e => setReceivedAmount(e.target.value)} className="bg-neutral-800 border-neutral-700" /></div>
+            )}
+          </div>
+          <DialogFooter><Button onClick={handleProcessPayment} disabled={paymentProcessing} className="w-full bg-emerald-600 hover:bg-emerald-700">Confirmar Recebimento</Button></DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   )
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const color = getStatusColor(status)
-  return (
-    <Badge variant="outline" className={cn("border-opacity-50", color)}>
-      {formatStatus(status)}
-    </Badge>
-  )
-}
-
-function getStatusColor(status: string) {
-  switch (status) {
-    case "PENDENTE": return "border-amber-500 text-amber-500"
-    case "EM_PREPARO": return "border-orange-500 text-orange-500"
-    case "PRONTO": return "border-emerald-500 text-emerald-500"
-    case "SAIU_ENTREGA": return "border-purple-500 text-purple-500"
-    case "ENTREGUE": return "border-blue-500 text-blue-500"
-    case "CANCELADO": return "border-red-500 text-red-500"
-    default: return ""
-  }
-}
-
-function getStatusGradient(status: string) {
-  switch (status) {
-    case "PENDENTE": return "from-amber-500/20 to-yellow-500/20 text-amber-700 dark:text-amber-300"
-    case "EM_PREPARO": return "from-orange-500/20 to-red-500/20 text-orange-700 dark:text-orange-300"
-    case "PRONTO": return "from-emerald-500/20 to-green-500/20 text-emerald-700 dark:text-emerald-300"
-    case "SAIU_ENTREGA": return "from-purple-500/20 to-pink-500/20 text-purple-700 dark:text-purple-300"
-    case "ENTREGUE": return "from-blue-500/20 to-cyan-500/20 text-blue-700 dark:text-blue-300"
-    case "CANCELADO": return "from-red-500/20 to-rose-500/20 text-red-700 dark:text-red-300"
-    default: return ""
-  }
-}
-
-function formatStatus(status: string) {
-  switch (status) {
-    case "PENDENTE": return "Pendente"
-    case "EM_PREPARO": return "Em Preparo"
-    case "PRONTO": return "Pronto"
-    case "SAIU_ENTREGA": return "Saiu p/ Entrega"
-    case "ENTREGUE": return "Entregue"
-    case "CANCELADO": return "Cancelado"
-    default: return status
-  }
 }

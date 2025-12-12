@@ -831,7 +831,7 @@ export function ProductManager() {
                                             <Layers className="h-4 w-4" />
                                             Opções
                                             {choices.length > 0 && (
-                                                <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300">
+                                                <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300">
                                                     {choices.length}
                                                 </span>
                                             )}
@@ -978,7 +978,7 @@ export function ProductManager() {
                                                 <Button
                                                     onClick={() => setShowAddGroup(true)}
                                                     size="sm"
-                                                    className="bg-gradient-to-r from-violet-600 to-purple-500 hover:from-violet-700 hover:to-purple-600 text-white rounded-xl shadow-lg shadow-violet-500/20"
+                                                    className="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white rounded-xl shadow-lg shadow-red-500/20"
                                                 >
                                                     <Plus className="h-4 w-4 mr-1" />
                                                     Novo Grupo
@@ -988,13 +988,13 @@ export function ProductManager() {
                                             {/* Loading */}
                                             {loadingChoices && (
                                                 <div className="flex items-center justify-center py-12">
-                                                    <Loader2 className="h-8 w-8 animate-spin text-violet-500" />
+                                                    <Loader2 className="h-8 w-8 animate-spin text-red-500" />
                                                 </div>
                                             )}
 
                                             {/* Add Group Form */}
                                             {showAddGroup && (
-                                                <div className="p-4 rounded-2xl bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border border-violet-200 dark:border-violet-800">
+                                                <div className="p-4 rounded-2xl bg-gradient-to-r from-red-50 to-red-50 dark:from-red-900/20 dark:to-red-900/20 border border-red-200 dark:border-red-800">
                                                     <Label className="text-sm font-medium mb-2 block">Nome do Grupo</Label>
                                                     <div className="flex gap-2">
                                                         <Input
@@ -1008,7 +1008,7 @@ export function ProductManager() {
                                                         <Button
                                                             onClick={handleAddChoiceGroup}
                                                             disabled={isPending || !newGroupName.trim()}
-                                                            className="rounded-xl bg-violet-600 hover:bg-violet-700 text-white"
+                                                            className="rounded-xl bg-red-600 hover:bg-red-700 text-white"
                                                         >
                                                             {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
                                                         </Button>
@@ -1026,15 +1026,15 @@ export function ProductManager() {
                                             {/* Empty State */}
                                             {!loadingChoices && choices.length === 0 && !showAddGroup && (
                                                 <div className="py-12 text-center">
-                                                    <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-                                                        <Layers className="h-8 w-8 text-violet-500" />
+                                                    <div className="h-16 w-16 mx-auto mb-4 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                                        <Layers className="h-8 w-8 text-red-500" />
                                                     </div>
                                                     <h4 className="font-semibold text-lg mb-1">Nenhum grupo de opções</h4>
                                                     <p className="text-sm text-neutral-500 mb-4">Adicione grupos para permitir personalizações</p>
                                                     <Button
                                                         onClick={() => setShowAddGroup(true)}
                                                         variant="outline"
-                                                        className="rounded-xl border-violet-300 text-violet-600 hover:bg-violet-50"
+                                                        className="rounded-xl border-red-300 text-red-600 hover:bg-red-50"
                                                     >
                                                         <Plus className="h-4 w-4 mr-2" />
                                                         Criar primeiro grupo
@@ -1050,7 +1050,7 @@ export function ProductManager() {
                                                         className={cn(
                                                             "rounded-2xl border transition-all",
                                                             expandedChoices.has(group.id)
-                                                                ? "border-violet-300 dark:border-violet-700 bg-violet-50/50 dark:bg-violet-900/10"
+                                                                ? "border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10"
                                                                 : "border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800/50"
                                                         )}
                                                     >
@@ -1059,7 +1059,7 @@ export function ProductManager() {
                                                             onClick={() => toggleChoiceExpanded(group.id)}
                                                             className="p-4 flex items-center gap-3 cursor-pointer hover:bg-black/[0.02] dark:hover:bg-white/[0.02] rounded-2xl transition-colors"
                                                         >
-                                                            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center shadow-lg shadow-violet-500/20">
+                                                            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-red-500 to-red-500 flex items-center justify-center shadow-lg shadow-red-500/20">
                                                                 <Layers className="h-5 w-5 text-white" />
                                                             </div>
                                                             <div className="flex-1 min-w-0">

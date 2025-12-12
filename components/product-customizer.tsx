@@ -51,11 +51,13 @@ export type CartItem = {
 export function ProductCustomizer({
   product,
   onClose,
-  onConfirm
+  onConfirm,
+  showBuyNow = true
 }: {
   product: Product
   onClose: () => void
   onConfirm: (cartItem: Omit<CartItem, "uniqueId">, redirect?: boolean) => void
+  showBuyNow?: boolean
 }) {
   const [quantity, setQuantity] = useState(1)
   const [selectedOptions, setSelectedOptions] = useState<Record<string | number, Option[]>>({})
@@ -274,21 +276,23 @@ export function ProductCustomizer({
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:flex-1">
-            <Button
-              size="lg"
-              variant="outline"
-              className="w-full sm:flex-1 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-300 hover:border-red-500/50 bg-transparent h-12 rounded-xl text-base font-bold uppercase tracking-wide"
-              onClick={() => onConfirm({
-                product,
-                quantity,
-                selectedOptions,
-                notes,
-                totalPrice: calculateTotal()
-              }, true)}
-              disabled={!isValid()}
-            >
-              Comprar Agora
-            </Button>
+            {showBuyNow && (
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:flex-1 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:text-red-700 dark:hover:text-red-300 hover:border-red-500/50 bg-transparent h-12 rounded-xl text-base font-bold uppercase tracking-wide"
+                onClick={() => onConfirm({
+                  product,
+                  quantity,
+                  selectedOptions,
+                  notes,
+                  totalPrice: calculateTotal()
+                }, true)}
+                disabled={!isValid()}
+              >
+                Comprar Agora
+              </Button>
+            )}
             <Button
               size="lg"
               className="w-full sm:flex-1 bg-red-600 hover:bg-red-700 text-white shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] transition-all h-12 rounded-xl text-base font-bold uppercase tracking-wide border-0"
